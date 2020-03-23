@@ -1,0 +1,20 @@
+language: python
+sudo: false
+cache:
+  directories:
+  - "$HOME/.cache/pip"
+python:
+- 3.6
+env:
+- DIST="--installpkg ./dist/ami2py-*.whl"
+install:
+- pip install -r requirements.txt
+- pip list
+- python setup.py bdist_wheel
+script:
+- "$TIMEOUT tox -v $DIST"
+deploy:
+  provider: pypi
+  user: DarkLight
+  password:
+    secure: H4xvt4vOjG7Fo2Jng/o+JvnQwmi7lKFwWzWVvNQIrMm0ClM63FvphhahlU+kWocTzG7+6+OY5ZrFB7imjMVwqKNV0jpjtEsChgdZuXOYTV6L4LKTGvi7v1nblNQY9X2JSuZ8xONpn+HUfxlFcRG+o/lDfw77SfcfaCvnyVy7rDK2lYk0QtZqQbFy+03jxBp51mEdoK0hlk5iKZocMO8RkTABnjG1qy/1CzX7E6lXpSlIz8fiDT7krdSjYR/mkRWlA+HOpNOekMsrJl5lK4CrBAo2NQWNjird16xzmqVG4vXtz5NO2S0I7/VLnes6xtXS5T7IhsUc4BHH+bKoYZzrCIJGgKwZpXUwLXr9+i86KsyY2s6yd7I9lnCgyWHO6ylaIUaVxw9Bo20C4BCzfL+SRNfcEm6LmJKlxcnNKEYo+qbLzr4i9M+Q0nTgilfN1+LXphSCvcfDVXHKxCD+mfN2Uxgz3SYyERInoICoJbf2cslNxAt5t7+TcGiFY3SP4wrP7AhseDGiYcSiNta563q/urVq1UBrqPjZSJcTZAQM1DtM5VKX376rntTGxrjHYLbmyTQXKGAAhgDydyNvksnTOMkZhkS/pxir8fVGpvqd0bxnt88UN8ZmrqLOsxTV57uB1BHfvoHgeGvCouQAeUwvwXCmolKdrrAH88JhoOkyq28=
