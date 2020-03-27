@@ -41,8 +41,8 @@ setup(
     # tests_require=["pytest>=2.0.0", "pytest-assume", "requests", "PyPDF2"],
     author="Dark Ligt alias FB2011B",
     description="Python Package for reading a amibroker database",
-    long_description=open("README.rst").read(),
-    url="https://github.com/F2011B/pyzac",
+    long_description="No long description yet",
+    url="https://github.com/F2011B/ami2py",
     keywords="amibroker database pandas",
     classifiers=[
         "Environment :: Console",
