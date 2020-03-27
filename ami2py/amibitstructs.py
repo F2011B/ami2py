@@ -1,7 +1,6 @@
 from construct import Struct, BitStruct, BitsInteger, swapbitsinbytes, GreedyRange
-
-from ami2py.revbitinteger import RevBitsInteger, RevFormatField
-from ami2py.consts import DATEPACKED, DAY, MONTH, YEAR, VOLUME, CLOSE, OPEN, HIGH, LOW
+from .revbitinteger import RevBitsInteger, RevFormatField
+from .consts import DATEPACKED, DAY, MONTH, YEAR, VOLUME, CLOSE, OPEN, HIGH, LOW
 
 
 def create_entry_chunk():
