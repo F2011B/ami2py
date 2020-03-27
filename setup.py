@@ -30,8 +30,8 @@ def long_description():
 setup(
     name="ami2py",
     version="0.1.0",
-    packages=find_packages("src"),
-    package_dir={"": "src"},
+    packages=find_packages("."),
+    package_dir={"": "."},
     include_package_data=True,
     python_requires=">= 3.6",
     license="MIT",
