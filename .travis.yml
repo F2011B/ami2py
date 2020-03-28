@@ -12,7 +12,7 @@ install:
 - pip list
 - python setup.py bdist_wheel
 script:
-- "$TIMEOUT tox -v $DIST"
+- pytest tests
 deploy:
   provider: pypi
   user: DarkLight
