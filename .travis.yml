@@ -14,6 +14,10 @@ install:
 - pip install .
 script:
 - pytest tests
+before-deploy:
+- bumpversion --verbose patch
+- python setup.py bdist_wheel 
+
 deploy:
   provider: pypi
   user: __token__
