@@ -4,4 +4,6 @@ pytest
 wheel
 sphinx
 sphinx_rtd_theme
+construct
+pandas
 
