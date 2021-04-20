@@ -1,6 +1,7 @@
 import pandas as pd
 from construct import Struct, Bytes, GreedyRange, swapbitsinbytes
 from .amibitstructs import create_entry_chunk
+from .ami_construct import SymbolConstruct
 from .consts import YEAR, DAY, MONTH, CLOSE, OPEN, HIGH, LOW, VOLUME, DATEPACKED
 import os
 
@@ -54,36 +55,18 @@ class AmiReader:
 
     def get_symbol_data_pandas(self, symbol_name):
         symbdata = self.get_symbol_data_raw(symbol_name)
-        return convert_to_data_frame(symbdata[VALUE_INDEX])
+        return convert_to_data_frame(symbdata)
 
 
 
 def read_symbol_file_data_part(binfile):
-    datapart = binfile[0x4A0:]
-    data = swapbitsinbytes(datapart)
-    a = create_entry_chunk()
-    chunksize = 40
-    parsed = a.parse(data[:chunksize])
-    assert parsed["DatePacked"][YEAR] == 2017
-    start = 0
-    end = chunksize
-    values = {
-        DAY: [],
-        MONTH: [],
-        YEAR: [],
-        CLOSE: [],
-        OPEN: [],
-        HIGH: [],
-        LOW: [],
-        VOLUME: [],
-    }
     packed_map = {
         DAY: lambda x: x[DATEPACKED][DAY],
         MONTH: lambda x: x[DATEPACKED][MONTH],
         YEAR: lambda x: x[DATEPACKED][YEAR],
     }
-    greedy_parser = GreedyRange(a)
-    data_lines = greedy_parser.parse(data)
+    data=SymbolConstruct.parse(binfile)
+    data_lines = data["Entries"]
     values = [
         (
             packed_map[DAY](el),
@@ -97,7 +80,10 @@ def read_symbol_file_data_part(binfile):
         )
         for el in data_lines
     ]
-    return chunksize, data, values
+    return values
+
+
+
 
 
 def convert_to_data_frame(values):
@@ -106,3 +92,4 @@ def convert_to_data_frame(values):
     )
     df["Date"] = pd.to_datetime(df.loc[:, [DAY, MONTH, YEAR]])
     return df
+

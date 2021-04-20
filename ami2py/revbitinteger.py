@@ -73,7 +73,7 @@ class RevBitsInteger(BitsInteger):
                 )
             data = swapbytes(data)
         data = data[::-1]
-        stream_write(stream, data, length)
+        stream_write(stream, data, length,path)
         return obj
 
 
@@ -99,5 +99,5 @@ class RevFormatField(FormatField):
                 "struct %r error during building, given value %r" % (self.fmtstr, obj)
             )
         data = swapbitsinbytes(data)
-        stream_write(stream, data, self.length)
+        stream_write(stream, data, self.length,path)
         return obj
