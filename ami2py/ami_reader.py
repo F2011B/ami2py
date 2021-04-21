@@ -24,17 +24,17 @@ class AmiReader:
         self.__symbols = self.__read_symbols()
 
     def __read_symbols(self):
-        binarry, errorstate, errmsg=self.__get_binarry(BROKER_MASTER)
+        binarry, errorstate, errmsg = self.__get_binarry(BROKER_MASTER)
         if errorstate:
             return []
         return extract_symbols_from_db(binarry)
 
     def __get_binarry(self, filename):
-        '''
+        """
 
         :param filename:
         :return: binarray, error state, errormsg
-        '''
+        """
         if not os.path.isdir(self.__folder):
             return [], True, f"{self.__folder} is not a directory"
         brokerfile = os.path.join(self.__folder, filename)
@@ -48,7 +48,7 @@ class AmiReader:
         return self.__symbols.copy()
 
     def get_symbol_data_raw(self, symbol_name):
-        binarry, errorstate, errmsg=self.__get_binarry(symbol_name)
+        binarry, errorstate, errmsg = self.__get_binarry(symbol_name)
         if errorstate:
             return []
         return read_symbol_file_data_part(binarry)
@@ -58,6 +58,31 @@ class AmiReader:
         return convert_to_data_frame(symbdata)
 
 
+class AmiDataBase:
+    def __init__(self, folder):
+        self.reader = AmiReader(folder)
+        self.symbol_cache = {}
+        self.symbols = []
+        self.symbol_frames = {}
+
+    def get_symbols(self):
+        if len(self.symbols) == 0:
+            self.symbols = self.reader.get_symbols()
+        return self.symbols
+
+    def add_symbol(self, symbol_name):
+        pass
+
+    def get_dataframe_for_symbol(self, symbol_name):
+        if symbol_name in self.symbol_cache:
+            return self.symbol_cache[symbol_name]
+        self.symbol_cache[symbol_name] = self.reader.get_symbol_data_pandas(symbol_name)
+        return self.symbol_cache[symbol_name]
+
+    def append_data_to_symbol(self):
+        pass
+
+
 
 def read_symbol_file_data_part(binfile):
     packed_map = {
@@ -65,7 +90,7 @@ def read_symbol_file_data_part(binfile):
         MONTH: lambda x: x[DATEPACKED][MONTH],
         YEAR: lambda x: x[DATEPACKED][YEAR],
     }
-    data=SymbolConstruct.parse(binfile)
+    data = SymbolConstruct.parse(binfile)
     data_lines = data["Entries"]
     values = [
         (
@@ -83,13 +108,9 @@ def read_symbol_file_data_part(binfile):
     return values
 
 
-
-
-
 def convert_to_data_frame(values):
     df = pd.DataFrame(
         values, columns=[DAY, MONTH, YEAR, OPEN, HIGH, LOW, CLOSE, VOLUME]
     )
     df["Date"] = pd.to_datetime(df.loc[:, [DAY, MONTH, YEAR]])
     return df
-
