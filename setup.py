@@ -56,4 +56,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+    install_requires=[
+        'construct==2.10.67'
+    ]
 )

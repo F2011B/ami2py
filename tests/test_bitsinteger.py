@@ -1,14 +1,11 @@
-from ami2py import create_entry_chunk, read_symbol_file_data_part
-from ami2py import DATEPACKED
-from ami2py import swapnibbleinbytes, AmiReader
-from construct import swapbitsinbytes
+from ami2py import read_symbol_file_data_part
+from ami2py import AmiReader
 from ami2py.ami_reader import extract_symbols_from_db
 from ami2py.ami_construct import Master, SymbolConstruct
 from ami2py.consts import DATEPACKED, OPEN
 
 
 import os
-
 
 def test_load_pandas():
     test_data_folder = os.path.dirname(__file__)
