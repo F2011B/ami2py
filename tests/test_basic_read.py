@@ -3,16 +3,16 @@ from ami2py import AmiReader
 from ami2py.ami_reader import extract_symbols_from_db
 from ami2py.ami_construct import Master, SymbolConstruct
 from ami2py.consts import DATEPACKED, OPEN
-
-
 import os
+
 
 def test_load_pandas():
     test_data_folder = os.path.dirname(__file__)
     test_data_file = os.path.join(test_data_folder, "./TestData/SPCE")
     f = open(test_data_file, "rb")
     binfile = f.read()
-    values = read_symbol_file_data_part(binfile)
+    data = SymbolConstruct.parse(binfile)
+    values = read_symbol_file_data_part(data)
     assert len(values) == 600
 
 
@@ -67,3 +67,12 @@ def test_AmiReader():
     assert spce["Year"][0] == 2017
     assert spce["Month"][0] == 9
     assert spce["Day"][0] == 29
+
+
+def test_reader_SymbolData():
+    test_data_folder = os.path.dirname(__file__)
+    test_data_folder = os.path.join(test_data_folder, "./TestData")
+    amireader = AmiReader(test_data_folder)
+    spce = amireader.get_symbol_data("SPCE")
+    df = spce.to_dataframe()
+    assert len(df.Close) > 20

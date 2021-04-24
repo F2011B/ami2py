@@ -1,6 +1,6 @@
 import pandas as pd
-from construct import Struct, Bytes, GreedyRange, swapbitsinbytes
-from .amibitstructs import create_entry_chunk
+from construct import Struct, Bytes, GreedyRange
+from .ami_dataclasses import SymbolEntry, SymbolData
 from .ami_construct import SymbolConstruct
 from .consts import YEAR, DAY, MONTH, CLOSE, OPEN, HIGH, LOW, VOLUME, DATEPACKED
 import os
@@ -51,46 +51,38 @@ class AmiReader:
         binarry, errorstate, errmsg = self.__get_binarry(symbol_name)
         if errorstate:
             return []
-        return read_symbol_file_data_part(binarry)
+        data = SymbolConstruct.parse(binarry)
+        return read_symbol_file_data_part(data)
 
     def get_symbol_data_pandas(self, symbol_name):
         symbdata = self.get_symbol_data_raw(symbol_name)
         return convert_to_data_frame(symbdata)
 
-
-class AmiDataBase:
-    def __init__(self, folder):
-        self.reader = AmiReader(folder)
-        self.symbol_cache = {}
-        self.symbols = []
-        self.symbol_frames = {}
-
-    def get_symbols(self):
-        if len(self.symbols) == 0:
-            self.symbols = self.reader.get_symbols()
-        return self.symbols
-
-    def add_symbol(self, symbol_name):
-        pass
-
-    def get_dataframe_for_symbol(self, symbol_name):
-        if symbol_name in self.symbol_cache:
-            return self.symbol_cache[symbol_name]
-        self.symbol_cache[symbol_name] = self.reader.get_symbol_data_pandas(symbol_name)
-        return self.symbol_cache[symbol_name]
-
-    def append_data_to_symbol(self):
-        pass
+    def get_symbol_data(self, symbol_name):
+        binarry, errorstate, errmsg = self.__get_binarry(symbol_name)
+        data = SymbolConstruct.parse(binarry)
+        values = [
+            SymbolEntry(
+                open=el[OPEN],
+                low=el[LOW],
+                high=el[HIGH],
+                close=el[CLOSE],
+                volume=el[VOLUME],
+                day=el[DATEPACKED][DAY],
+                month=el[DATEPACKED][MONTH],
+                year=el[DATEPACKED][YEAR],
+            )
+            for el in data["Entries"]
+        ]
+        return SymbolData(values)
 
 
-
-def read_symbol_file_data_part(binfile):
+def read_symbol_file_data_part(data):
     packed_map = {
         DAY: lambda x: x[DATEPACKED][DAY],
         MONTH: lambda x: x[DATEPACKED][MONTH],
         YEAR: lambda x: x[DATEPACKED][YEAR],
     }
-    data = SymbolConstruct.parse(binfile)
     data_lines = data["Entries"]
     values = [
         (
@@ -114,3 +106,7 @@ def convert_to_data_frame(values):
     )
     df["Date"] = pd.to_datetime(df.loc[:, [DAY, MONTH, YEAR]])
     return df
+
+
+def convert_to_SymbolData(values):
+    values

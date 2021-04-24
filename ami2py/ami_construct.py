@@ -7,7 +7,7 @@ from construct import (
     BitsSwapped,
 )
 from .consts import YEAR, DAY, MONTH, CLOSE, OPEN, HIGH, LOW, VOLUME, DATEPACKED
-from .amibitstructs import EntryChunk
+from .ami_bitstructs import EntryChunk
 
 
 Master = Struct(

@@ -29,7 +29,7 @@ def long_description():
 
 setup(
     name="ami2py",
-    version="0.1.3",
+    version="0.1.4",
     packages=find_packages("."),
     package_dir={"": "."},
     include_package_data=True,
@@ -57,6 +57,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     install_requires=[
-        'construct==2.10.67'
+        'construct==2.10.67',
+        'dataclass-type-validator'
     ]
 )
