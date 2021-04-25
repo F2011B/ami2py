@@ -1,33 +1,30 @@
 import pandas as pd
 from construct import Struct, Bytes, GreedyRange
 from .ami_dataclasses import SymbolEntry, SymbolData
-from .ami_construct import SymbolConstruct
+from .ami_construct import SymbolConstruct, Master
 from .consts import YEAR, DAY, MONTH, CLOSE, OPEN, HIGH, LOW, VOLUME, DATEPACKED
 import os
 
 VALUE_INDEX = 2
 BROKER_MASTER = "broker.master"
 
-
-def extract_symbols_from_db(binarr):
-    datapart = binarr[0x4A0:]
-    # 494 bytes - 5bytes = 489
-    a = Struct("Symbol" / Bytes(5), "Rest" / Bytes(1172 - 5))
-    greedy_parser = GreedyRange(a)
-    data_lines = greedy_parser.parse(datapart)
-    return [data["Symbol"].decode("ascii").rstrip("\x00") for data in data_lines]
-
-
 class AmiReader:
     def __init__(self, folder):
         self.__folder = folder
+        self.__master = self._read_master()
         self.__symbols = self.__read_symbols()
 
-    def __read_symbols(self):
+    def get_master(self):
+        return self.__master
+
+    def _read_master(self):
         binarry, errorstate, errmsg = self.__get_binarry(BROKER_MASTER)
         if errorstate:
             return []
-        return extract_symbols_from_db(binarry)
+        return Master.parse(binarry)
+
+    def __read_symbols(self):
+        return [el["Symbol"] for el in self.__master["Symbols"]]
 
     def __get_binarry(self, filename):
         """
@@ -99,7 +96,6 @@ def read_symbol_file_data_part(data):
     ]
     return values
 
-
 def convert_to_data_frame(values):
     df = pd.DataFrame(
         values, columns=[DAY, MONTH, YEAR, OPEN, HIGH, LOW, CLOSE, VOLUME]
@@ -107,6 +103,3 @@ def convert_to_data_frame(values):
     df["Date"] = pd.to_datetime(df.loc[:, [DAY, MONTH, YEAR]])
     return df
 
-
-def convert_to_SymbolData(values):
-    values

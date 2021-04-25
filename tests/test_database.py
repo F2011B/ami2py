@@ -45,3 +45,5 @@ def test_append_symbol_data():
     except:
         assert False
     assert True
+    aapl = db.get_dataframe_for_symbol("AAPL")
+    assert len(aapl) == 1

@@ -1,6 +1,5 @@
 from ami2py import read_symbol_file_data_part
 from ami2py import AmiReader
-from ami2py.ami_reader import extract_symbols_from_db
 from ami2py.ami_construct import Master, SymbolConstruct
 from ami2py.consts import DATEPACKED, OPEN
 import os
@@ -14,16 +13,6 @@ def test_load_pandas():
     data = SymbolConstruct.parse(binfile)
     values = read_symbol_file_data_part(data)
     assert len(values) == 600
-
-
-def test_broker_db():
-    test_data_folder = os.path.dirname(__file__)
-    test_data_file = os.path.join(test_data_folder, "./TestData/broker.master")
-    f = open(test_data_file, "rb")
-    binfile = f.read()
-    symbols = extract_symbols_from_db(binfile)
-    assert symbols[0] == "AA"
-    assert symbols[1] == "AACC"
 
 
 def test_amistruct_master(master_data):

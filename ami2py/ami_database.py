@@ -1,5 +1,6 @@
 from .ami_reader import AmiReader
-from .ami_dataclasses import SymbolEntry
+from .ami_dataclasses import SymbolEntry, SymbolData
+from .ami_construct import Master
 
 
 class AmiDataBase:
@@ -8,6 +9,8 @@ class AmiDataBase:
         self._symbol_cache = {}
         self._symbols = []
         self._symbol_frames = {}
+        self._modified_symbols=[]
+        self._master=self.reader.get_master()
 
     def get_symbols(self):
         if len(self._symbols) == 0:
@@ -18,6 +21,9 @@ class AmiDataBase:
         self._symbols.append(symbol_name)
 
     def store_symbol(self, symbol_name):
+        pass
+
+    def write_database(self):
         pass
 
     def read_data_for_symbol(self, symbol_name):
@@ -36,6 +42,9 @@ class AmiDataBase:
         :param data: Instance of SymbolEntry
         :return:
         """
+        self._modified_symbols.append(symbol)
         if symbol not in self._symbol_cache:
-            self._symbol_cache[symbol] = []
+            self._symbol_cache[symbol] = SymbolData([data])
+            return
+
         self._symbol_cache[symbol].append(data)
