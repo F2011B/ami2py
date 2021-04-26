@@ -71,7 +71,7 @@ class AmiReader:
             )
             for el in data["Entries"]
         ]
-        return SymbolData(values)
+        return SymbolData(Header=data["Header"], Entries=values)
 
 
 def read_symbol_file_data_part(data):

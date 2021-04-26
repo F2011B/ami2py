@@ -36,6 +36,13 @@ class AmiDataBase:
         self.read_data_for_symbol(symbol_name)
         return self._symbol_cache[symbol_name].to_dataframe()
 
+    def get_symbol_data(self, symbol_name):
+        if symbol_name in self._symbol_cache:
+            return self._symbol_cache[symbol_name]
+
+        self.read_data_for_symbol(symbol_name)
+        return self._symbol_cache[symbol_name]
+
     def append_data_to_symbol(self, symbol, data: SymbolEntry):
         """
         :param symbol: name of the symbol to which data should be appended
@@ -44,7 +51,7 @@ class AmiDataBase:
         """
         self._modified_symbols.append(symbol)
         if symbol not in self._symbol_cache:
-            self._symbol_cache[symbol] = SymbolData([data])
+            self._symbol_cache[symbol] = SymbolData(Entries=[data])
             return
 
         self._symbol_cache[symbol].append(data)

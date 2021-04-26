@@ -29,13 +29,13 @@ from .ami_construct import SymbolConstruct, Master
 @dataclass_validate()
 @dataclass()
 class SymbolEntry:
-    month: int
-    year: int
-    close: float
-    open: float
-    low: float
-    high: float
-    volume: float
+    month: int = 0
+    year: int = 0
+    close: float = 0.0
+    open: float = 0.0
+    low: float = 0.0
+    high: float = 0.0
+    volume: float = 0.0
     future: int = 0
     reserved: int = 0
     micro_second: int = 0
@@ -49,6 +49,29 @@ class SymbolEntry:
 
     # 256
 
+    def set_by_construct(self, con_data):
+        date_data = con_data[DATEPACKED]
+        self.future = date_data[FUT]
+        self.reserved = date_data[RESERVED]
+        self.micro_second = date_data[MICRO_SEC]
+        self.milli_sec = date_data[MILLI_SEC]
+        self.second = date_data[SECOND]
+        self.minute = date_data[MINUTE]
+        self.hour = date_data[HOUR]
+        self.day= date_data[DAY]
+        self.month= date_data[MONTH]
+        self.year= date_data[YEAR]
+
+        self.close = con_data[CLOSE]
+        self.open = con_data[OPEN]
+        self.high = con_data[HIGH]
+        self.low = con_data[LOW]
+        self.volume = con_data[VOLUME]
+        self.aux_1 = con_data[AUX_1]
+        self.aux_2 = con_data[AUX_2]
+        self.terminator = con_data[TERMINATOR]
+        return self
+
     def to_construct_dict(self):
         return {
             DATEPACKED: {
@@ -59,6 +82,9 @@ class SymbolEntry:
                 SECOND: self.second,
                 MINUTE: self.minute,
                 HOUR: self.hour,
+                DAY: self.day,
+                MONTH: self.month,
+                YEAR: self.year
             },
             CLOSE: self.close,
             OPEN: self.open,
@@ -76,11 +102,16 @@ class SymbolEntry:
 @dataclass_validate()
 @dataclass()
 class SymbolData:
-    Header: int = 0
-    Series: List[SymbolEntry] = field(default_factory=list)
+    Header: bytes = b"\x00"
+    Entries: List[SymbolEntry] = field(default_factory=list)
 
     def append(self, entry: SymbolEntry):
-        self.Series.append(entry)
+        self.Entries.append(entry)
+
+    def set_by_construct(self, con_data):
+        self.Header = con_data["Header"]
+        self.Entries = [SymbolEntry().set_by_construct(el) for el in con_data["Entries"]]
+        return self
 
     def to_dict(self):
         result = {
@@ -93,7 +124,7 @@ class SymbolData:
             CLOSE: [],
             VOLUME: [],
         }
-        for el in self.Series:
+        for el in self.Entries:
             result[DAY].append(el.day)
             result[MONTH].append(el.month)
             result[YEAR].append(el.year)
@@ -108,7 +139,7 @@ class SymbolData:
     def to_construct_dict(self):
         result = {
             "Header": self.Header,
-            "Entries": [el.to_construct_dict() for el in self.Series],
+            "Entries": [el.to_construct_dict() for el in self.Entries],
         }
         return result
 
@@ -122,9 +153,27 @@ class SymbolData:
 
 @dataclass_validate()
 @dataclass()
+class MasterEntry:
+    Symbol: str
+    Rest: bytes
+
+    def to_construct_dict(self):
+        result = {"Symbol": self.Symbol, "Rest": self.Rest}
+        return result
+
+
+@dataclass_validate()
+@dataclass()
 class MasterData:
-    Header: int = 0
-    Symbols: List[str] = field(default_factory=list)
+    Header: bytes
+    Symbols: List[SymbolEntry] = field(default_factory=list)
 
     def write_to_file(self, file):
         Master.build()
+
+    def to_construct_dict(self):
+        result = {
+            "Header": self.Header,
+            "Symbols": [el.to_construct_dict() for el in self.Symbols],
+        }
+        return result
