@@ -25,6 +25,8 @@ from .consts import (
 )
 from .ami_construct import SymbolConstruct, Master
 
+SYMBOL_REST = b"\0" * (1172 - 5)
+
 
 @dataclass_validate()
 @dataclass()
@@ -46,6 +48,7 @@ class SymbolEntry:
     day: int = 0
     aux_1: int = 0
     aux_2: int = 0
+    terminator: int = 0
 
     # 256
 
@@ -58,9 +61,9 @@ class SymbolEntry:
         self.second = date_data[SECOND]
         self.minute = date_data[MINUTE]
         self.hour = date_data[HOUR]
-        self.day= date_data[DAY]
-        self.month= date_data[MONTH]
-        self.year= date_data[YEAR]
+        self.day = date_data[DAY]
+        self.month = date_data[MONTH]
+        self.year = date_data[YEAR]
 
         self.close = con_data[CLOSE]
         self.open = con_data[OPEN]
@@ -84,7 +87,7 @@ class SymbolEntry:
                 HOUR: self.hour,
                 DAY: self.day,
                 MONTH: self.month,
-                YEAR: self.year
+                YEAR: self.year,
             },
             CLOSE: self.close,
             OPEN: self.open,
@@ -102,7 +105,7 @@ class SymbolEntry:
 @dataclass_validate()
 @dataclass()
 class SymbolData:
-    Header: bytes = b"\x00"
+    Header: bytes = b"\0" * 0x4A0
     Entries: List[SymbolEntry] = field(default_factory=list)
 
     def append(self, entry: SymbolEntry):
@@ -110,7 +113,9 @@ class SymbolData:
 
     def set_by_construct(self, con_data):
         self.Header = con_data["Header"]
-        self.Entries = [SymbolEntry().set_by_construct(el) for el in con_data["Entries"]]
+        self.Entries = [
+            SymbolEntry().set_by_construct(el) for el in con_data["Entries"]
+        ]
         return self
 
     def to_dict(self):
@@ -154,22 +159,36 @@ class SymbolData:
 @dataclass_validate()
 @dataclass()
 class MasterEntry:
-    Symbol: str
-    Rest: bytes
+    Symbol: str = ""
+    Rest: bytes = SYMBOL_REST
 
     def to_construct_dict(self):
         result = {"Symbol": self.Symbol, "Rest": self.Rest}
         return result
 
+    def set_by_construct(self, con_data):
+        if type(con_data["Symbol"]) != str:
+            return self
+
+        self.Symbol = con_data["Symbol"]
+        self.Rest = con_data["Rest"]
+        return self
+
 
 @dataclass_validate()
 @dataclass()
 class MasterData:
-    Header: bytes
-    Symbols: List[SymbolEntry] = field(default_factory=list)
+    Header: bytes = b"\0" * 0x4A0
+    Symbols: List[MasterEntry] = field(default_factory=list)
 
     def write_to_file(self, file):
         Master.build()
+
+    def append_symbol(self, symbol: str, rest: bytes = SYMBOL_REST):
+        self.Symbols.append(MasterEntry(Symbol=symbol, Rest=rest))
+
+    def get_symbols(self):
+        return [el.Symbol for el in self.Symbols]
 
     def to_construct_dict(self):
         result = {
@@ -177,3 +196,10 @@ class MasterData:
             "Symbols": [el.to_construct_dict() for el in self.Symbols],
         }
         return result
+
+    def set_by_construct(self, con_data):
+        self.Header = con_data["Header"]
+        self.Symbols = [
+            MasterEntry().set_by_construct(el) for el in con_data["Symbols"]
+        ]
+        return self

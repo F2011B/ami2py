@@ -64,6 +64,14 @@ def test_Master(master_data):
     data = master_instance.to_construct_dict()
     assert master_data == Master.build(data)
 
+    master_instance = MasterData()
+    master_instance.set_by_construct(parsed)
+    newbin=Master.build(master_instance.to_construct_dict())
+    newparsed=Master.parse(newbin)
+    assert newparsed["Symbols"][0]["Symbol"] == "AA"
+    assert newparsed["Symbols"][1]["Symbol"] == "AACC"
+
+
 
 def test_SymbolData(symbol_spce):
     space = SymbolConstruct.parse(symbol_spce)

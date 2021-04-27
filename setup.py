@@ -19,17 +19,12 @@ if sys.version_info < (3, 6):
 
 
 def long_description():
-    with open(os.path.join(BASE_PATH, "README.rst")) as readme:
-        result = readme.read()
-    result += "\n\n"
-    with open(os.path.join(BASE_PATH, "CHANGES.rst")) as changes:
-        result += changes.read()
-    return result
-
+    with open(os.path.join(BASE_PATH, "README.md")) as readme:
+        return readme.read()
 
 setup(
     name="ami2py",
-    version="0.1.4",
+    version="0.2.0",
     packages=find_packages("."),
     package_dir={"": "."},
     include_package_data=True,
@@ -41,7 +36,8 @@ setup(
     # tests_require=["pytest>=2.0.0", "pytest-assume", "requests", "PyPDF2"],
     author="Dark Ligt alias FB2011B",
     description="Python Package for reading a amibroker database",
-    long_description="No long description yet",
+    long_description=long_description(),
+    long_description_content_type='text/markdown',
     url="https://github.com/F2011B/ami2py",
     keywords="amibroker database pandas",
     classifiers=[

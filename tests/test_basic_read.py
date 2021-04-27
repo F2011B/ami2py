@@ -1,4 +1,3 @@
-from ami2py import read_symbol_file_data_part
 from ami2py import AmiReader
 from ami2py.ami_construct import Master, SymbolConstruct
 from ami2py.consts import DATEPACKED, OPEN
@@ -11,8 +10,7 @@ def test_load_pandas():
     f = open(test_data_file, "rb")
     binfile = f.read()
     data = SymbolConstruct.parse(binfile)
-    values = read_symbol_file_data_part(data)
-    assert len(values) == 600
+    assert len(data["Entries"]) == 600
 
 
 def test_amistruct_master(master_data):
@@ -52,7 +50,7 @@ def test_AmiReader():
     symbols = amireader.get_symbols()
     assert symbols[0] == "AA"
     assert symbols[1] == "AACC"
-    spce = amireader.get_symbol_data_pandas("SPCE")
+    spce = amireader.get_symbol_data_dictionary("SPCE")
     assert spce["Year"][0] == 2017
     assert spce["Month"][0] == 9
     assert spce["Day"][0] == 29

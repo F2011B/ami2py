@@ -1,12 +1,12 @@
-import pandas as pd
 from construct import Struct, Bytes, GreedyRange
-from .ami_dataclasses import SymbolEntry, SymbolData
+from .ami_dataclasses import SymbolEntry, SymbolData, MasterData
 from .ami_construct import SymbolConstruct, Master
 from .consts import YEAR, DAY, MONTH, CLOSE, OPEN, HIGH, LOW, VOLUME, DATEPACKED
 import os
 
 VALUE_INDEX = 2
 BROKER_MASTER = "broker.master"
+
 
 class AmiReader:
     def __init__(self, folder):
@@ -20,11 +20,13 @@ class AmiReader:
     def _read_master(self):
         binarry, errorstate, errmsg = self.__get_binarry(BROKER_MASTER)
         if errorstate:
-            return []
-        return Master.parse(binarry)
+            return MasterData()
+
+        parsed = Master.parse(binarry)
+        return MasterData().set_by_construct(parsed)
 
     def __read_symbols(self):
-        return [el["Symbol"] for el in self.__master["Symbols"]]
+        return self.__master.get_symbols()
 
     def __get_binarry(self, filename):
         """
@@ -49,11 +51,34 @@ class AmiReader:
         if errorstate:
             return []
         data = SymbolConstruct.parse(binarry)
-        return read_symbol_file_data_part(data)
+        return data
 
-    def get_symbol_data_pandas(self, symbol_name):
+    def get_symbol_data_dictionary(self, symbol_name):
         symbdata = self.get_symbol_data_raw(symbol_name)
-        return convert_to_data_frame(symbdata)
+        packed_map = {
+            DAY: lambda x: x[DATEPACKED][DAY],
+            MONTH: lambda x: x[DATEPACKED][MONTH],
+            YEAR: lambda x: x[DATEPACKED][YEAR],
+        }
+        data_lines = symbdata["Entries"]
+        result = {
+            DAY: [],
+            MONTH: [],
+            YEAR: [],
+            OPEN: [],
+            HIGH: [],
+            LOW: [],
+            CLOSE: [],
+            VOLUME: [],
+        }
+        for el in data_lines:
+            for k in result:
+                if k in [DAY, MONTH, YEAR]:
+                    result[k].append(el[DATEPACKED][k])
+                else:
+                    result[k].append(el[k])
+
+        return result
 
     def get_symbol_data(self, symbol_name):
         binarry, errorstate, errmsg = self.__get_binarry(symbol_name)
@@ -72,34 +97,3 @@ class AmiReader:
             for el in data["Entries"]
         ]
         return SymbolData(Header=data["Header"], Entries=values)
-
-
-def read_symbol_file_data_part(data):
-    packed_map = {
-        DAY: lambda x: x[DATEPACKED][DAY],
-        MONTH: lambda x: x[DATEPACKED][MONTH],
-        YEAR: lambda x: x[DATEPACKED][YEAR],
-    }
-    data_lines = data["Entries"]
-    values = [
-        (
-            packed_map[DAY](el),
-            packed_map[MONTH](el),
-            packed_map[YEAR](el),
-            el[OPEN],
-            el[HIGH],
-            el[LOW],
-            el[CLOSE],
-            el[VOLUME],
-        )
-        for el in data_lines
-    ]
-    return values
-
-def convert_to_data_frame(values):
-    df = pd.DataFrame(
-        values, columns=[DAY, MONTH, YEAR, OPEN, HIGH, LOW, CLOSE, VOLUME]
-    )
-    df["Date"] = pd.to_datetime(df.loc[:, [DAY, MONTH, YEAR]])
-    return df
-
