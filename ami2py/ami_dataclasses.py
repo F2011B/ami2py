@@ -1,7 +1,6 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from dataclass_type_validator import dataclass_validate
 from typing import List
-import pandas as pd
 from .consts import (
     DAY,
     MONTH,
@@ -28,75 +27,92 @@ from .ami_construct import SymbolConstruct, Master
 SYMBOL_REST = b"\0" * (1172 - 5)
 
 
-@dataclass_validate()
 @dataclass()
 class SymbolEntry:
-    month: int = 0
-    year: int = 0
-    close: float = 0.0
-    open: float = 0.0
-    low: float = 0.0
-    high: float = 0.0
-    volume: float = 0.0
-    future: int = 0
-    reserved: int = 0
-    micro_second: int = 0
-    milli_sec: int = 0
-    second: int = 0
-    minute: int = 0
-    hour: int = 0
-    day: int = 0
-    aux_1: int = 0
-    aux_2: int = 0
-    terminator: int = 0
+    Month: int = 0
+    Year: int = 0
+    Close: float = 0.0
+    Open: float = 0.0
+    Low: float = 0.0
+    High: float = 0.0
+    Volume: float = 0.0
+    Future: int = 0
+    Reserved: int = 0
+    Micro_second: int = 0
+    Milli_sec: int = 0
+    Second: int = 0
+    Minute: int = 0
+    Hour: int = 0
+    Day: int = 0
+    Aux_1: int = 0
+    Aux_2: int = 0
+    Terminator: int = 0
 
     # 256
+    def __post_init__(self):
+        current_fields = fields(self)
+        for field in current_fields:
+            field_name = field.name
+            expected_type = field.type
+            value = getattr(self, field_name)
+            if expected_type == int:
+                assert isinstance(value, int)
+
+            if expected_type == float:
+                if isinstance(value, int):
+                    self.__setattr__(field_name, float(value))
+                value = getattr(self, field_name)
+                assert isinstance(value, float)
+
+    @classmethod
+    def get_necessary_args(self):
+        return ["Month", "Year", "Day", "Close", "High", "Open", "Low", "Volume"]
 
     def set_by_construct(self, con_data):
         date_data = con_data[DATEPACKED]
-        self.future = date_data[FUT]
-        self.reserved = date_data[RESERVED]
-        self.micro_second = date_data[MICRO_SEC]
-        self.milli_sec = date_data[MILLI_SEC]
-        self.second = date_data[SECOND]
-        self.minute = date_data[MINUTE]
-        self.hour = date_data[HOUR]
-        self.day = date_data[DAY]
-        self.month = date_data[MONTH]
-        self.year = date_data[YEAR]
+        self.Future = date_data[FUT]
+        self.Reserved = date_data[RESERVED]
+        self.Micro_second = date_data[MICRO_SEC]
+        self.Milli_sec = date_data[MILLI_SEC]
+        self.Second = date_data[SECOND]
+        self.Minute = date_data[MINUTE]
+        self.Hour = date_data[HOUR]
+        self.Day = date_data[DAY]
+        self.Month = date_data[MONTH]
+        self.Year = date_data[YEAR]
 
-        self.close = con_data[CLOSE]
-        self.open = con_data[OPEN]
-        self.high = con_data[HIGH]
-        self.low = con_data[LOW]
-        self.volume = con_data[VOLUME]
-        self.aux_1 = con_data[AUX_1]
-        self.aux_2 = con_data[AUX_2]
-        self.terminator = con_data[TERMINATOR]
+        self.Close = con_data[CLOSE]
+        self.Open = con_data[OPEN]
+        self.High = con_data[HIGH]
+        self.Low = con_data[LOW]
+        self.Volume = con_data[VOLUME]
+        self.Aux_1 = con_data[AUX_1]
+        self.Aux_2 = con_data[AUX_2]
+        self.Terminator = con_data[TERMINATOR]
         return self
 
     def to_construct_dict(self):
         return {
             DATEPACKED: {
-                FUT: self.future,
-                RESERVED: self.reserved,
-                MICRO_SEC: self.micro_second,
-                MILLI_SEC: self.milli_sec,
-                SECOND: self.second,
-                MINUTE: self.minute,
-                HOUR: self.hour,
-                DAY: self.day,
-                MONTH: self.month,
-                YEAR: self.year,
+                FUT: self.Future,
+                RESERVED: self.Reserved,
+                MICRO_SEC: self.Micro_second,
+                MILLI_SEC: self.Milli_sec,
+                SECOND: self.Second,
+                MINUTE: self.Minute,
+                HOUR: self.Hour,
+                DAY: self.Day,
+                MONTH: self.Month,
+                YEAR: self.Year,
             },
-            CLOSE: self.close,
-            OPEN: self.open,
-            HIGH: self.high,
-            LOW: self.low,
-            VOLUME: self.volume,  # 160
-            AUX_1: self.aux_1,
-            AUX_2: self.aux_2,
-            TERMINATOR: self.terminator,
+            CLOSE: self.Close,
+            OPEN: self.Open,
+            HIGH: self.High,
+            LOW: self.Low,
+            VOLUME: self.Volume,  # 160
+            AUX_1: self.Aux_1,
+            AUX_2: self.Aux_2,
+            TERMINATOR: self.Terminator,
         }
 
         pass
@@ -130,15 +146,15 @@ class SymbolData:
             VOLUME: [],
         }
         for el in self.Entries:
-            result[DAY].append(el.day)
-            result[MONTH].append(el.month)
-            result[YEAR].append(el.year)
+            result[DAY].append(el.Day)
+            result[MONTH].append(el.Month)
+            result[YEAR].append(el.Year)
 
-            result[OPEN].append(el.open)
-            result[HIGH].append(el.high)
-            result[LOW].append(el.low)
-            result[CLOSE].append(el.close)
-            result[VOLUME].append(el.volume)
+            result[OPEN].append(el.Open)
+            result[HIGH].append(el.High)
+            result[LOW].append(el.Low)
+            result[CLOSE].append(el.Close)
+            result[VOLUME].append(el.Volume)
         return result
 
     def to_construct_dict(self):
@@ -147,9 +163,6 @@ class SymbolData:
             "Entries": [el.to_construct_dict() for el in self.Entries],
         }
         return result
-
-    def to_dataframe(self):
-        return pd.DataFrame(self.to_dict())
 
     def write_to_file(self, file):
         binary = SymbolConstruct.build(self.to_construct_dict())

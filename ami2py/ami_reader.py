@@ -85,14 +85,14 @@ class AmiReader:
         data = SymbolConstruct.parse(binarry)
         values = [
             SymbolEntry(
-                open=el[OPEN],
-                low=el[LOW],
-                high=el[HIGH],
-                close=el[CLOSE],
-                volume=el[VOLUME],
-                day=el[DATEPACKED][DAY],
-                month=el[DATEPACKED][MONTH],
-                year=el[DATEPACKED][YEAR],
+                Open=el[OPEN],
+                Low=el[LOW],
+                High=el[HIGH],
+                Close=el[CLOSE],
+                Volume=el[VOLUME],
+                Day=el[DATEPACKED][DAY],
+                Month=el[DATEPACKED][MONTH],
+                Year=el[DATEPACKED][YEAR],
             )
             for el in data["Entries"]
         ]

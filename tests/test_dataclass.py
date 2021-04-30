@@ -6,28 +6,29 @@ from ami2py import DATEPACKED, OPEN
 
 def test_SymbolEntry():
     entry = SymbolEntry(
-        close=10.0,
-        low=10.0,
-        high=12.0,
-        open=10.0,
-        volume=0.0,
-        day=10,
-        month=11,
-        year=2020,
+        Close=10.0,
+        Low=10.0,
+        High=12,
+        Open=10.0,
+        Volume=0.0,
+        Day=10,
+        Month=11,
+        Year=2020,
     )
-    assert entry.day == 10
+    assert entry.Day == 10
+    assert entry.High == 12
 
 
 def test_SymbolData():
     entry = SymbolEntry(
-        close=10.0,
-        low=10.0,
-        high=12.0,
-        open=10.0,
-        volume=0.0,
-        day=10,
-        month=11,
-        year=2020,
+        Close=10.0,
+        Low=10.0,
+        High=12.0,
+        Open=10.0,
+        Volume=0.0,
+        Day=10,
+        Month=11,
+        Year=2020,
     )
     try:
         data = SymbolData(Entries=entry)
@@ -37,14 +38,14 @@ def test_SymbolData():
 
     data = SymbolData(Entries=[entry])
     entry = SymbolEntry(
-        close=10.0,
-        low=10.0,
-        high=12.0,
-        open=10.0,
-        volume=0.0,
-        day=11,
-        month=11,
-        year=2020,
+        Close=10.0,
+        Low=10.0,
+        High=12.0,
+        Open=10.0,
+        Volume=0.0,
+        Day=11,
+        Month=11,
+        Year=2020,
     )
     data.append(entry)
     assert len(data.Entries) == 2

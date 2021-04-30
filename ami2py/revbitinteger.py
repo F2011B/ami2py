@@ -7,11 +7,8 @@ from construct import (
     integertypes,
     integer2bits,
     stream_write,
-    FormatField,
-    FormatFieldError,
-    swapbitsinbytes,
 )
-import struct
+
 
 class RevBitsInteger(BitsInteger):
     def _parse(self, stream, context, path):
@@ -48,5 +45,5 @@ class RevBitsInteger(BitsInteger):
                 )
             data = swapbytes(data)
         data = data[::-1]
-        stream_write(stream, data, length,path)
+        stream_write(stream, data, length, path)
         return obj

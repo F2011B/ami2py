@@ -61,5 +61,5 @@ def test_reader_SymbolData():
     test_data_folder = os.path.join(test_data_folder, "./TestData")
     amireader = AmiReader(test_data_folder)
     spce = amireader.get_symbol_data("SPCE")
-    df = spce.to_dataframe()
-    assert len(df.Close) > 20
+    data = spce.to_dict()
+    assert len(data["Close"]) > 20
