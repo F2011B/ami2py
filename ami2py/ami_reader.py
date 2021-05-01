@@ -36,7 +36,7 @@ class AmiReader:
         """
         if not os.path.isdir(self.__folder):
             return [], True, f"{self.__folder} is not a directory"
-        brokerfile = os.path.join(self.__folder, filename)
+        brokerfile = os.path.join(self.__folder, filename )
 
         if not os.path.isfile(brokerfile):
             return [], True, f"{brokerfile} is not a file"
@@ -47,7 +47,7 @@ class AmiReader:
         return self.__symbols.copy()
 
     def get_symbol_data_raw(self, symbol_name):
-        binarry, errorstate, errmsg = self.__get_binarry(symbol_name)
+        binarry, errorstate, errmsg = self.__get_binarry(f"{symbol_name[0].lower()}\\{symbol_name}")
         if errorstate:
             return []
         data = SymbolConstruct.parse(binarry)
@@ -81,7 +81,7 @@ class AmiReader:
         return result
 
     def get_symbol_data(self, symbol_name):
-        binarry, errorstate, errmsg = self.__get_binarry(symbol_name)
+        binarry, errorstate, errmsg = self.__get_binarry(f"{symbol_name[0].lower()}\\{symbol_name}")
         data = SymbolConstruct.parse(binarry)
         values = [
             SymbolEntry(

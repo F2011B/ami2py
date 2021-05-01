@@ -6,7 +6,7 @@ import os
 
 def test_load_pandas():
     test_data_folder = os.path.dirname(__file__)
-    test_data_file = os.path.join(test_data_folder, "./TestData/SPCE")
+    test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
     f = open(test_data_file, "rb")
     binfile = f.read()
     data = SymbolConstruct.parse(binfile)
@@ -29,7 +29,7 @@ def test_write_master(master_data):
 
 def test_read_symbol_construct(symbol_spce):
     space = SymbolConstruct.parse(symbol_spce)
-    space["Entries"][0][DATEPACKED]["Year"] == 2017
+    assert space["Entries"][0][DATEPACKED]["Year"] == 2017
 
 
 def test_write_symbol_construct(symbol_spce):

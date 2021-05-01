@@ -18,7 +18,7 @@ def master_data():
 
 @pytest.fixture
 def symbol_spce():
-    test_data_file = os.path.join(test_data_folder, "./TestData/SPCE")
+    test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
     try:
         f = open(test_data_file, "rb")
         binfile = f.read()

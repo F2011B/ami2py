@@ -1,8 +1,11 @@
 from .ami_reader import AmiReader
 from .ami_dataclasses import SymbolEntry, SymbolData
 from .ami_construct import Master, SymbolConstruct
+from pathlib import Path
 import os
 
+def symbolpath(root,symbol):
+    return os.path.join(root, f"{symbol[0].lower()}\\{symbol}")
 
 class AmiDataBase:
     def __init__(self, folder):
@@ -36,6 +39,11 @@ class AmiDataBase:
             finally:
                 f.close()
 
+    def ensure_symbol_folder(self,symbol):
+        Path(os.path.join(self.folder,symbol[0])).mkdir(parents=True, exist_ok=True)
+
+
+
     def write_database(self):
         con_data = self._master.to_construct_dict()
         newbin = Master.build(con_data)
@@ -48,7 +56,8 @@ class AmiDataBase:
             newbin = SymbolConstruct.build(
                 self._symbol_cache[symbol].to_construct_dict()
             )
-            f = open(os.path.join(self.folder, symbol), "wb")
+            self.ensure_symbol_folder(symbol)
+            f = open(symbolpath(self.folder, symbol), "wb")
             try:
                 f.write(newbin)
             finally:
@@ -56,6 +65,9 @@ class AmiDataBase:
 
     def read_data_for_symbol(self, symbol_name):
         self._symbol_cache[symbol_name] = self.reader.get_symbol_data(symbol_name)
+
+    def read_raw_data_for_symbol(self, symbol_name):
+        return self.reader.get_symbol_data_raw(symbol_name)
 
     def get_dict_for_symbol(self, symbol_name):
         if symbol_name in self._symbol_cache:
