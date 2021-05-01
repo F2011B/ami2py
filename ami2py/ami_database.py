@@ -40,9 +40,7 @@ class AmiDataBase:
                 f.close()
 
     def ensure_symbol_folder(self,symbol):
-        Path(os.path.join(self.folder,symbol[0])).mkdir(parents=True, exist_ok=True)
-
-
+        Path(os.path.join(self.folder,symbol[0].lower())).mkdir(parents=True, exist_ok=True)
 
     def write_database(self):
         con_data = self._master.to_construct_dict()
