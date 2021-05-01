@@ -23,6 +23,8 @@ Examples
 ---------
 
 Creating a Database from scratch and adding symbol data to the database. 
+To use the underlying constructs in compiled form, use_compiled can be set to True within the  
+AmiDataBase constructor. This is a more or less experimental feature.
 
     >>> from ami2py import AmiDataBase, SymbolEntry
     >>> db = AmiDataBase(db_folder)

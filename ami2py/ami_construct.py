@@ -18,6 +18,8 @@ Master = Struct(
     ),
 )
 
+
+
 SymbolConstruct = Struct(
     "Header" / Bytes(0x4A0), "Entries" / GreedyRange(BitsSwapped(EntryChunk))
 )

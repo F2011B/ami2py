@@ -8,8 +8,8 @@ def symbolpath(root,symbol):
     return os.path.join(root, f"{symbol[0].lower()}\\{symbol}")
 
 class AmiDataBase:
-    def __init__(self, folder):
-        self.reader = AmiReader(folder)
+    def __init__(self, folder, use_compiled=False):
+        self.reader = AmiReader(folder,use_compiled=use_compiled)
         self._symbol_cache = {}
         self._symbols = []
         self._symbol_frames = {}

@@ -1,6 +1,7 @@
 from ami2py import AmiReader
 from ami2py.ami_construct import Master, SymbolConstruct
 from ami2py.consts import DATEPACKED, OPEN
+import time
 import os
 
 
@@ -63,3 +64,30 @@ def test_reader_SymbolData():
     spce = amireader.get_symbol_data("SPCE")
     data = spce.to_dict()
     assert len(data["Close"]) > 20
+
+# Currently the  compiled is not faster for this data
+# def test_AmiReader_compiled_should_faster():
+#     test_data_folder = os.path.dirname(__file__)
+#     test_data_folder = os.path.join(test_data_folder, "./TestData")
+#     amireader_fast = AmiReader(test_data_folder)
+#     amireader_slow = AmiReader(test_data_folder, use_compiled=False)
+#     time_fast=0
+#     time_slow=0
+#     num_runs=20
+#     for i in range(num_runs):
+#         start=time.perf_counter()
+#         spce = amireader_fast.get_symbol_data("SPCE")
+#         end=time.perf_counter()
+#         time_fast=time_fast+ end-start
+#
+#         start=time.perf_counter()
+#         spce = amireader_slow.get_symbol_data("SPCE")
+#         end=time.perf_counter()
+#         time_slow=time_slow+ end-start
+#     time_slow=time_slow/num_runs
+#     time_fast=time_fast/num_runs
+#
+#     assert time_slow > time_fast
+
+
+
