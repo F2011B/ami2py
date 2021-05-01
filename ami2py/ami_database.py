@@ -5,7 +5,7 @@ from pathlib import Path
 import os
 
 def symbolpath(root,symbol):
-    return os.path.join(root, f"{symbol[0].lower()}\\{symbol}")
+    return os.path.join(root, f"{symbol[0].lower()}/{symbol}")
 
 class AmiDataBase:
     def __init__(self, folder, use_compiled=False):

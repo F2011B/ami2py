@@ -117,5 +117,6 @@ def test_AmiDataBase_should_create_new_db():
     except:
         assert False
     db.write_database()
-    assert os.path.exists(os.path.join(test_database_folder, "a\\AAPL"))
+
+    assert os.path.exists(os.path.join(test_database_folder, f"a/AAPL"))
     assert os.path.exists(os.path.join(test_database_folder, "broker.master"))

@@ -60,7 +60,7 @@ class AmiReader:
 
     def get_symbol_data_raw(self, symbol_name):
         binarry, errorstate, errmsg = self.__get_binarry(
-            f"{symbol_name[0].lower()}\\{symbol_name}"
+            f"{symbol_name[0].lower()}/{symbol_name}"
         )
         if errorstate:
             return []
@@ -96,7 +96,7 @@ class AmiReader:
 
     def get_symbol_data(self, symbol_name):
         binarry, errorstate, errmsg = self.__get_binarry(
-            f"{symbol_name[0].lower()}\\{symbol_name}"
+            f"{symbol_name[0].lower()}/{symbol_name}"
         )
         data = self.__symbol.parse(binarry)
         values = [
