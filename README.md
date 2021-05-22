@@ -52,7 +52,7 @@ Reading a list of symbols contained in the database.
 
 Getting values for a symbol in a pandas compatible dicitonary format.
 
-    >>> data = aapl = db.get_dict_for_symbol("SPCE")
+    >>> db.get_dict_for_symbol("SPCE")
     {
         "Open": [20.0,....],
         "Close": [200.0,....],
@@ -64,6 +64,46 @@ Getting values for a symbol in a pandas compatible dicitonary format.
         "Year": [2020,.......],
         "Day": [17,........],
     }
+
+Using a list container facade for fast reading of symbol data. 
+The previous mentioned methods to read symbol data from the database use construct to 
+convert the binary array into a hierarchical object structure. 
+Creating those objects during the load process, causes high delay during loading. 
+Therefore a symbol facade called AmiSymbolDataFacade was created to read data only in case 
+it is necessary.
+
+     >>> data = db.get_fast_symbol_data("SPCE")
+     >>> data[0]
+     {'Year': 2017, 
+      'Month': 9, 
+      'Day': 29, 
+      'Hour': 10, 
+      'Minute': 63, 
+      'Second': 63, 
+      'MilliSec': 258, 
+      'MicroSec': 255, 
+      'Reserved': 1,  
+      'Isfut': 1,  
+      'Close': 10.100000381469727, 
+      'Open': 10.5, 
+      'High': 10.5, 
+      'Low': 10.0, 
+      'Volume': 212769.0, 
+      'AUX1': 0.0, 
+      'AUX2': 0.0,  
+      'TERMINATOR': 0.0
+     }
+     >>> newslice=data[0:10] 
+     >>> newslice[0]
+     {'Year': 2017,
+      'Month': 9,
+      ......
+     }
+     >>> newslice[1]
+     {'Year': 2017,
+      'Month': 10,
+       ......
+     }
 
 Todos
 --------------------

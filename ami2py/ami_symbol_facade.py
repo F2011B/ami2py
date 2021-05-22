@@ -35,7 +35,6 @@ import struct
 from numba import jit
 
 
-
 Master = Struct(
     "Header" / Bytes(0x4A0),
     "Symbols"
@@ -48,6 +47,168 @@ Master = Struct(
 SymbolConstruct = Struct(
     "Header" / Bytes(0x4A0), "Entries" / GreedyRange(BitsSwapped(EntryChunk))
 )
+
+
+class AmiSymbolFacade:
+    def __init__(self, binary):
+        self.data = binary
+        pass
+
+    def __setitem__(self, key, item):
+        self.__dict__[key] = item
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __repr__(self):
+        return repr(self.__dict__)
+
+    def __len__(self):
+        return len(self.__dict__)
+
+    def __delitem__(self, key):
+        del self.__dict__[key]
+
+    def clear(self):
+        return self.__dict__.clear()
+
+    def copy(self):
+        return self.__dict__.copy()
+
+    def has_key(self, k):
+        return k in self.__dict__
+
+    def update(self, *args, **kwargs):
+        return self.__dict__.update(*args, **kwargs)
+
+    def keys(self):
+        return self.__dict__.keys()
+
+    def values(self):
+        return self.__dict__.values()
+
+    def items(self):
+        return self.__dict__.items()
+
+    def pop(self, *args):
+        return self.__dict__.pop(*args)
+
+    def __cmp__(self, dict_):
+        return self.__cmp__(self.__dict__, dict_)
+
+    def __contains__(self, item):
+        return item in self.__dict__
+
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    # def __unicode__(self):
+    #     return unicode(repr(self.__dict__))
+
+
+class AmiHeaderFacade:
+    def __init__(self):
+        pass
+
+
+def reverse_bits(byte_data):
+    return int("{:08b}".format(byte_data)[::-1], 2)
+
+
+def read_date(date_tuple):
+    values = int.from_bytes(swapbitsinbytes(bytes(date_tuple)), "little")
+    return {
+        # Reversed
+        YEAR: (date_tuple[7] << 4) + ((date_tuple[6] & 0xF0) >> 4),
+        MONTH: date_tuple[6] & 0x0F,
+        DAY: (date_tuple[5] & 0xF8) >> 3,
+        # Unreversed !!!
+        HOUR: (reverse_bits(date_tuple[5]) & 0x7)
+        + ((reverse_bits(date_tuple[4]) & 0xC0) >> 6),
+        MINUTE: (reverse_bits(date_tuple[4]) & 0x3F),
+        SECOND: (reverse_bits(date_tuple[3]) & 0xFC) >> 2,
+        MILLI_SEC: (reverse_bits(date_tuple[3]) & 0x3)
+        + (reverse_bits(date_tuple[2]) & 0xFF),
+        MICRO_SEC: (reverse_bits(date_tuple[1]) & 0xFF)
+        + ((reverse_bits(date_tuple[0]) & 0xC0) >> 6),
+        RESERVED: ((reverse_bits(date_tuple[0]) & 0x1E) >> 1),
+        FUT: (reverse_bits(date_tuple[0]) & 0x1),
+    }
+
+
+def read_date_data(entrybin):
+    stride = 40
+    start = 0
+    datapackbytes = zip(
+        entrybin[start::stride],
+        entrybin[start + 1 :: stride],
+        entrybin[start + 2 :: stride],
+        entrybin[start + 3 :: stride],
+        entrybin[start + 4 :: stride],
+        entrybin[start + 5 :: stride],
+        entrybin[start + 6 :: stride],
+        entrybin[start + 7 :: stride],
+    )
+    result = [el for el in map(read_date, datapackbytes)]
+    return result
+
+
+def create_float(float_tuple):
+    return struct.unpack("<f", bytes(float_tuple))[0]
+
+
+class AmiSymbolDataFacade:
+    def __init__(self, binary):
+        self.binentries = binary[0x4A0:]
+        self.length = (len(self.binentries) - 4) // 40
+        self.stride = 40
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, item):
+        if type(item) == int:
+            return self._get_item_by_index(item)
+        if type(item) == slice:
+            result = []
+            if item.start >= 0:
+                if item.step:
+                    for i in range(item.start, item.stop, item.step):
+                        result.append(self._get_item_by_index(i))
+                else:
+                    for i in range(item.start, item.stop):
+                        result.append(self._get_item_by_index(i))
+            else:
+                start = self.length + item.start
+                if item.step:
+                    for i in range(start, item.stop, item.step):
+                        result.append(self._get_item_by_index(i))
+                else:
+                    for i in range(start, item.stop, -1):
+                        result.append(self._get_item_by_index(i))
+
+            return result
+
+    def _get_item_by_index(self, item):
+        index = item
+        if item < 0:
+            index = self.length + item
+        start = index * self.stride
+        date_tuple = self.binentries[start : (start + 8)]
+        return {
+            **read_date(date_tuple),
+            CLOSE: create_float(self.binentries[(start + 8) : (start + 12)]),
+            OPEN: create_float(self.binentries[(start + 12) : (start + 16)]),
+            HIGH: create_float(self.binentries[(start + 16) : (start + 20)]),
+            LOW: create_float(self.binentries[(start + 20) : (start + 24)]),
+            VOLUME: create_float(self.binentries[(start + 24) : (start + 28)]),
+            AUX_1: create_float(self.binentries[(start + 28) : (start + 32)]),
+            AUX_2: create_float(self.binentries[(start + 32) : (start + 36)]),
+            TERMINATOR: create_float(self.binentries[(start + 36) : (start + 40)]),
+        }
+
+    def __iter__(self):
+        pass
 
 
 class SymbolConstructFast:
@@ -142,100 +303,3 @@ class SymbolConstructFast:
             )
 
         return result
-
-@jit(cache=True)
-def reverse_bits(byte_data):
-    return int("{:08b}".format(byte_data)[::-1], 2)
-
-@jit(cache=True)
-def read_date(date_tuple):
-    values = int.from_bytes(swapbitsinbytes(bytes(date_tuple)), "little")
-    return {
-        # Reversed
-        YEAR: (date_tuple[7] << 4) + ((date_tuple[6] & 0xF0) >> 4),
-        MONTH: date_tuple[6] & 0x0F,
-        DAY: (date_tuple[5] & 0xF8) >> 3,
-        # Unreversed !!!
-        HOUR: (reverse_bits(date_tuple[5]) & 0x7)
-              + ((reverse_bits(date_tuple[4]) & 0xC0) >> 6),
-        MINUTE: (reverse_bits(date_tuple[4]) & 0x3F),
-        SECOND: (reverse_bits(date_tuple[3]) & 0xFC) >> 2,
-        MILLI_SEC: (reverse_bits(date_tuple[3]) & 0x3)
-                   + (reverse_bits(date_tuple[2]) & 0xFF),
-        MICRO_SEC: (reverse_bits(date_tuple[1]) & 0xFF)
-                   + ((reverse_bits(date_tuple[0]) & 0xC0) >> 6),
-        RESERVED: ((reverse_bits(date_tuple[0]) & 0x1E) >> 1),
-        FUT: (reverse_bits(date_tuple[0]) & 0x1),
-    }
-
-@jit(cache=True)
-def read_date_data(entrybin):
-    stride = 40
-    start = 0
-    datapackbytes = zip(
-        entrybin[start::stride],
-        entrybin[start + 1 :: stride],
-        entrybin[start + 2 :: stride],
-        entrybin[start + 3 :: stride],
-        entrybin[start + 4 :: stride],
-        entrybin[start + 5 :: stride],
-        entrybin[start + 6 :: stride],
-        entrybin[start + 7 :: stride],
-    )
-    result = [el for el in map(read_date, datapackbytes)]
-    return result
-
-@jit(cache=True)
-def create_float(float_tuple):
-    return struct.unpack("<f", bytes(float_tuple))
-
-@jit(cache=True)
-def read_floats(entrybin,start=8):
-    stride = 40
-    result = zip(
-        entrybin[start::stride],
-        entrybin[start + 1 :: stride],
-        entrybin[start + 2 :: stride],
-        entrybin[start + 3 :: stride],
-    )
-    result = [el[0] for el in map(create_float, result)]
-    return result
-
-@jit(cache=True)
-def parse_fast(bin):
-    binentries = bin[0x4A0:]
-    result = {}
-    # header = "Header" / Bytes(0x4A0)
-    # result["Header"] = header.parse(bin[0:0x4A0])
-    result["Entries"] = []
-    start = 0x4A0
-    entrybin = bin[start:]
-
-    # def read_date(date_tuple):
-    #     return BitsSwapped(Date).parse(bytes(date_tuple))
-
-
-    date_time = read_date_data(entrybin)
-    close = read_floats(entrybin,start=8)
-    open = read_floats(entrybin,start=8 + 4)
-    high = read_floats(entrybin,start=8 + 8)
-    low = read_floats(entrybin,start=8 + 12)
-    volume = read_floats(entrybin,start=8 + 16)
-    aux1 = read_floats(entrybin,start=8 + 20)
-    aux2 = read_floats(entrybin,start=8 + 24)
-    terminator = read_floats(entrybin,start=8 + 28)
-    for i in range(len(date_time)):
-        result["Entries"].append(
-            {
-                DATEPACKED: date_time[i],
-                CLOSE: close[i],
-                OPEN: open[i],
-                HIGH: high[i],
-                LOW: low[i],
-                VOLUME: volume[i],
-                AUX_1: aux1[i],
-                AUX_2: aux2[i],
-                TERMINATOR: terminator[i]
-            }
-        )
-    return result

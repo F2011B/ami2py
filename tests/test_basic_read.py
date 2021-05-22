@@ -1,8 +1,9 @@
 from ami2py import AmiReader
-from ami2py.ami_construct import Master, SymbolConstruct
-from ami2py.consts import DATEPACKED, OPEN
+from ami2py.ami_construct import Master, SymbolConstruct, SymbolConstructFast, parse_fast
+from ami2py.consts import DATEPACKED, CLOSE, DAY, MONTH, YEAR, HIGH, LOW, OPEN
 import time
 import os
+from ami2py.ami_symbol_facade import AmiSymbolDataFacade
 
 
 def test_load_pandas():
@@ -10,8 +11,22 @@ def test_load_pandas():
     test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
     f = open(test_data_file, "rb")
     binfile = f.read()
+    start=time.perf_counter_ns()
     data = SymbolConstruct.parse(binfile)
+    stop=time.perf_counter_ns()
+    diff=stop-start
     assert len(data["Entries"]) == 600
+
+def test_amisymbolfacade():
+    test_data_folder = os.path.dirname(__file__)
+    test_data_file = os.path.join(test_data_folder, "./MinuteData/VLO")
+    f = open(test_data_file, "rb")
+    binfile = f.read()
+    facade=AmiSymbolDataFacade(binfile)
+    assert facade.length ==100000
+    test=facade[-1]
+    sliced=facade[-1:facade.length-21:-1]
+    assert len(sliced) == 20
 
 
 def test_amistruct_master(master_data):

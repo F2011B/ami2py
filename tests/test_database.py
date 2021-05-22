@@ -25,6 +25,16 @@ def test_AmiDataBase_should_get_dict_for_symbol():
     assert aapl["Year"][0] == 2017
 
 
+def test_AmiDataBase_should_get_fastdata_for_symbol():
+    test_database_folder = os.path.join(test_data_folder, "./TestData")
+    db = AmiDataBase(test_database_folder)
+    symbol = db.get_fast_symbol_data("SPCE")
+    assert len(symbol) > 10
+    assert symbol[0]["Day"] == 29
+    assert symbol[0]["Month"] == 9
+    assert symbol[0]["Year"] == 2017
+    assert len(symbol[0:10]) == 10
+
 def test_AmiDataBase_should_append_symbol_entry():
     test_database_folder = os.path.join(test_data_folder, "./TestData")
     db = AmiDataBase(test_database_folder)
