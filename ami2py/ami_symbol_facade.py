@@ -29,10 +29,9 @@ from .consts import (
     AUX_2,
     TERMINATOR,
 )
-from .ami_bitstructs import EntryChunk, Date
-import numpy as np
+from .ami_bitstructs import EntryChunk
 import struct
-from numba import jit
+
 
 
 Master = Struct(
