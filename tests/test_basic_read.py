@@ -19,11 +19,11 @@ def test_load_pandas():
 
 def test_amisymbolfacade():
     test_data_folder = os.path.dirname(__file__)
-    test_data_file = os.path.join(test_data_folder, "./MinuteData/VLO")
+    test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
     f = open(test_data_file, "rb")
     binfile = f.read()
     facade=AmiSymbolDataFacade(binfile)
-    assert facade.length ==100000
+    assert facade.length ==600
     test=facade[-1]
     sliced=facade[-1:facade.length-21:-1]
     assert len(sliced) == 20
