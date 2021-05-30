@@ -27,7 +27,8 @@ def test_amisymbolfacade():
     test=facade[-1]
     sliced=facade[-1:facade.length-21:-1]
     assert len(sliced) == 20
-
+    sliced=facade[-1:-21:-1]
+    assert len(sliced) == 20
 
 def test_amistruct_master(master_data):
     parsed = Master.parse(master_data)

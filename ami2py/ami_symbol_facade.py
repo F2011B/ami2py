@@ -33,7 +33,6 @@ from .ami_bitstructs import EntryChunk
 import struct
 
 
-
 Master = Struct(
     "Header" / Bytes(0x4A0),
     "Symbols"
@@ -170,23 +169,21 @@ class AmiSymbolDataFacade:
             return self._get_item_by_index(item)
         if type(item) == slice:
             result = []
-            if item.start >= 0:
-                if item.step:
-                    for i in range(item.start, item.stop, item.step):
-                        result.append(self._get_item_by_index(i))
-                else:
-                    for i in range(item.start, item.stop):
-                        result.append(self._get_item_by_index(i))
-            else:
-                start = self.length + item.start
-                if item.step:
-                    for i in range(start, item.stop, item.step):
-                        result.append(self._get_item_by_index(i))
-                else:
-                    for i in range(start, item.stop, -1):
-                        result.append(self._get_item_by_index(i))
+        start = self._convert_to_index(item.start)
+        stop = self._convert_to_index(item.stop)
+        step=item.step
+        if item.step == None:
+            step=1
+        for i in range(start, stop, step):
+            result.append(self._get_item_by_index(i))
 
-            return result
+        return result
+
+    def _convert_to_index(self, index):
+        if index >= 0:
+            return index
+        if index < 0:
+            return self.length + index
 
     def _get_item_by_index(self, item):
         index = item
@@ -207,6 +204,9 @@ class AmiSymbolDataFacade:
         }
 
     def __iter__(self):
+        pass
+
+    def __add__(self, other):
         pass
 
 
