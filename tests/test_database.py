@@ -154,5 +154,35 @@ def test_AmiDataBase_should_create_new_db_and_add_fast_symbol_data():
     )
     fast_data = db.get_fast_symbol_data("AAPL")
     assert fast_data.length == 1
+    db.append_to_symbol("AAPL",[{
+        "Day": 2,
+        "Month": 10,
+        "Year": 2017,
+        "Close": 0.12,
+        "Open": 0.3,
+        "High": 0.5,
+        "Low": 0.1,
+        "Volume": 2001,
+    },{
+        "Day": 3,
+        "Month": 10,
+        "Year": 2017,
+        "Close": 0.12,
+        "Open": 0.3,
+        "High": 0.5,
+        "Low": 0.1,
+        "Volume": 2001121,
+    },{
+        "Day": 4,
+        "Month": 10,
+        "Year": 2017,
+        "Close": 0.12,
+        "Open": 0.3,
+        "High": 0.5,
+        "Low": 0.1,
+        "Volume": 2001121,
+    }])
+
+    assert fast_data.length == 4
     db.write_database()
     assert os.path.exists(os.path.join(test_database_folder,'a/AAPL'))

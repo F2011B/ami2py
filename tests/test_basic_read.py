@@ -56,8 +56,8 @@ def test_add_to_amisymbolfacade():
 
 def test_amistruct_master(master_data):
     parsed = Master.parse(master_data)
-    assert parsed["Symbols"][0]["Symbol"] == "AA"
-    assert parsed["Symbols"][1]["Symbol"] == "AACC"
+    assert parsed["Symbols"][0]["Symbol"] == "A"
+    assert parsed["Symbols"][1]["Symbol"] == "AA"
 
 
 def test_write_master(master_data):
@@ -89,8 +89,8 @@ def test_AmiReader():
     test_data_folder = os.path.join(test_data_folder, "./TestData")
     amireader = AmiReader(test_data_folder)
     symbols = amireader.get_symbols()
-    assert symbols[0] == "AA"
-    assert symbols[1] == "AACC"
+    assert symbols[0] == "A"
+    assert symbols[1] == "AA"
     spce = amireader.get_symbol_data_dictionary("SPCE")
     assert spce["Year"][0] == 2017
     assert spce["Month"][0] == 9

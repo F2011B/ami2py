@@ -22,8 +22,7 @@ However, it seems to be a good idea to use the official quote downloader program
 Examples
 ---------
 
-Creating a Database from scratch and adding symbol data to the database. 
-**WARNING Database from scratch created database cannot be used by amibroker at current state.**
+Creating a Database from scratch and adding symbol data to the database.
 To use the underlying constructs in compiled form, use_compiled can be set to True within the  
 AmiDataBase constructor. This is a more or less experimental feature.
 
@@ -108,7 +107,7 @@ it is necessary.
 
 Todos
 --------------------
-* Created database should be readable by amibroker
+* Created Database is readable, however the last data point of a symbol gets displayed not correctly.
 * Write tests for intraday data, currently data structures is able to handle intraday data. 
   But no tests had been written, until now. 
   This is considered mandatory to reach version 1.0.0  

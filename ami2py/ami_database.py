@@ -40,6 +40,15 @@ class AmiDataBase:
             for el in symboldata:
                 self._fast_symbol_cache[symbol_name] += el
 
+    def append_to_symbol(self, symbol_name, symboldata):
+        if symbol_name not in self._fast_symbol_cache:
+            self.read_fast_data_for_symbol(symbol_name)
+        if type(symboldata) == dict:
+            self._fast_symbol_cache[symbol_name] += symboldata
+        if type(symboldata) == list:
+            for el in symboldata:
+                self._fast_symbol_cache[symbol_name] += el
+
     def add_symbol_data_dict(self, input_dict):
         pass
 
