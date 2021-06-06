@@ -34,14 +34,14 @@ from .ami_bitstructs import EntryChunk
 import struct
 
 # Const(b"\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\x3F")
-
+from construct import CString
+ascii_str=CString('ascii')
 Master = Struct(
     "Header" / Bytes(12),
     "Symbols"
     / GreedyRange(
         Struct(
-            "Symbol" / PaddedString(5, "ASCII"),
-            "Space" / Bytes(495 - 5 - 3),
+            "Symbol" / Bytes(492),
             "CONST"
             / Const(
                 b"\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\x3F"

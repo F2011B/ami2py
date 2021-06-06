@@ -26,7 +26,7 @@ from .ami_construct import SymbolConstruct, Master
 
 SYMBOL_REST = b"\0" * (1172 - 5 - 16 - 490 + 3)
 SYMBOL_SPACE = b"\0" * (495 - 5 - 3)
-
+SYMBOL_STR=b"\0" * (497)
 
 @dataclass()
 class SymbolEntry:
@@ -173,12 +173,12 @@ class SymbolData:
 @dataclass_validate()
 @dataclass()
 class MasterEntry:
-    Symbol: str = ""
-    Space: bytes= SYMBOL_SPACE
+    Symbol: str = SYMBOL_STR
+    #Space: bytes= SYMBOL_SPACE
     Rest: bytes = SYMBOL_REST
 
     def to_construct_dict(self):
-        result = {"Symbol": self.Symbol, "Rest": self.Rest, "Space": self.Space,"Const":None}
+        result = {"Symbol": self.Symbol, "Rest": self.Rest, "Const":None}
         return result
 
     def set_by_construct(self, con_data):
@@ -187,7 +187,7 @@ class MasterEntry:
 
         self.Symbol = con_data["Symbol"]
         self.Rest = con_data["Rest"]
-        self.Space = con_data["Space"]
+        #self.Space = con_data["Space"]
         return self
 
 
@@ -204,7 +204,7 @@ class MasterData:
         self.Symbols.append(MasterEntry(Symbol=symbol, Rest=rest))
 
     def get_symbols(self):
-        return [el.Symbol for el in self.Symbols]
+        return [ascii_str.parse(el.Symbol) for el in self.Symbols]
 
     def to_construct_dict(self):
         result = {

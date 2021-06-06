@@ -4,8 +4,8 @@ from ami2py.consts import DATEPACKED, OPEN
 import time
 import os
 from ami2py.ami_symbol_facade import AmiSymbolDataFacade
-
-
+from construct import CString
+ascii_str=CString('ascii')
 def test_load_pandas():
     test_data_folder = os.path.dirname(__file__)
     test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
@@ -56,16 +56,16 @@ def test_add_to_amisymbolfacade():
 
 def test_amistruct_master(master_data):
     parsed = Master.parse(master_data)
-    assert parsed["Symbols"][0]["Symbol"] == "A"
-    assert parsed["Symbols"][1]["Symbol"] == "AA"
+    assert ascii_str.parse(parsed["Symbols"][0]["Symbol"]) == "A"
+    assert ascii_str.parse(parsed["Symbols"][1]["Symbol"]) == "AA"
 
 
 def test_write_master(master_data):
     parsed = Master.parse(master_data)
-    parsed["Symbols"][0]["Symbol"] = "JD"
+    parsed["Symbols"][0]["Symbol"] = ascii_str.build("JD")
     newbin = Master.build(parsed)
     newparsed = Master.parse(newbin)
-    assert newparsed["Symbols"][0]["Symbol"] == "JD"
+    assert ascii_str.parse(newparsed["Symbols"][0]["Symbol"]) == "JD"
 
 
 def test_read_symbol_construct(symbol_spce):
