@@ -4,12 +4,16 @@ from .ami_construct import Master, SymbolConstruct
 from pathlib import Path
 import os
 
-def symbolpath(root,symbol):
+
+def symbolpath(root, symbol):
     return os.path.join(root, f"{symbol[0].lower()}/{symbol}")
+
 
 class AmiDataBase:
     def __init__(self, folder, use_compiled=False):
-        self.reader = AmiReader(folder,use_compiled=use_compiled)
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+        self.reader = AmiReader(folder, use_compiled=use_compiled)
         self._symbol_cache = {}
         self._fast_symbol_cache = {}
         self._symbols = []
@@ -27,9 +31,17 @@ class AmiDataBase:
     def add_symbol(self, symbol_name):
         self._master.append_symbol(symbol=symbol_name)
 
+    def add_new_symbol(self, symbol_name, symboldata):
+        self._master.append_symbol(symbol=symbol_name)
+        self.read_fast_data_for_symbol(symbol_name)
+        if type(symboldata) == dict:
+            self._fast_symbol_cache[symbol_name] += symboldata
+        if type(symboldata) == list:
+            for el in symboldata:
+                self._fast_symbol_cache[symbol_name] += el
+
     def add_symbol_data_dict(self, input_dict):
         pass
-
 
     def store_symbol(self, symbol_name):
         if symbol_name in self._symbol_cache:
@@ -41,8 +53,10 @@ class AmiDataBase:
             finally:
                 f.close()
 
-    def ensure_symbol_folder(self,symbol):
-        Path(os.path.join(self.folder,symbol[0].lower())).mkdir(parents=True, exist_ok=True)
+    def ensure_symbol_folder(self, symbol):
+        Path(os.path.join(self.folder, symbol[0].lower())).mkdir(
+            parents=True, exist_ok=True
+        )
 
     def write_database(self):
         con_data = self._master.to_construct_dict()
@@ -52,6 +66,15 @@ class AmiDataBase:
             f.write(newbin)
         finally:
             f.close()
+        for symbol in self._fast_symbol_cache:
+            newbin = self._fast_symbol_cache[symbol].binary
+            self.ensure_symbol_folder(symbol)
+            f = open(symbolpath(self.folder, symbol), "wb")
+            try:
+                f.write(newbin)
+            finally:
+                f.close()
+
         for symbol in self._symbol_cache:
             newbin = SymbolConstruct.build(
                 self._symbol_cache[symbol].to_construct_dict()
@@ -67,7 +90,9 @@ class AmiDataBase:
         self._symbol_cache[symbol_name] = self.reader.get_symbol_data(symbol_name)
 
     def read_fast_data_for_symbol(self, symbol_name):
-        self._fast_symbol_cache[symbol_name] = self.reader.get_fast_symbol_data(symbol_name)
+        self._fast_symbol_cache[symbol_name] = self.reader.get_fast_symbol_data(
+            symbol_name
+        )
 
     def read_raw_data_for_symbol(self, symbol_name):
         return self.reader.get_symbol_data_raw(symbol_name)
@@ -87,12 +112,11 @@ class AmiDataBase:
         return self._symbol_cache[symbol_name]
 
     def get_fast_symbol_data(self, symbol_name):
-        if symbol_name in self._symbol_cache:
+        if symbol_name in self._fast_symbol_cache:
             return self._fast_symbol_cache[symbol_name]
 
         self.read_fast_data_for_symbol(symbol_name)
         return self._fast_symbol_cache[symbol_name]
-
 
     def append_symbole_entry(self, symbol, data: SymbolEntry):
         """

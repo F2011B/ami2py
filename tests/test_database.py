@@ -35,6 +35,7 @@ def test_AmiDataBase_should_get_fastdata_for_symbol():
     assert symbol[0]["Year"] == 2017
     assert len(symbol[0:10]) == 10
 
+
 def test_AmiDataBase_should_append_symbol_entry():
     test_database_folder = os.path.join(test_data_folder, "./TestData")
     db = AmiDataBase(test_database_folder)
@@ -106,7 +107,6 @@ def test_AmiDataBase_should_create_new_db():
     test_database_folder = os.path.join(test_data_folder, "./NewData")
     if os.path.exists(test_database_folder):
         shutil.rmtree(test_database_folder)
-    os.mkdir(test_database_folder)
     # Create Amibroker Database
     db = AmiDataBase(test_database_folder)
     db.add_symbol("AAPL")
@@ -130,3 +130,29 @@ def test_AmiDataBase_should_create_new_db():
 
     assert os.path.exists(os.path.join(test_database_folder, f"a/AAPL"))
     assert os.path.exists(os.path.join(test_database_folder, "broker.master"))
+
+
+def test_AmiDataBase_should_create_new_db_and_add_fast_symbol_data():
+    # Setup folders
+    test_database_folder = os.path.join(test_data_folder, "./NewData")
+    if os.path.exists(test_database_folder):
+        shutil.rmtree(test_database_folder)
+    # Create Amibroker Database
+    db = AmiDataBase(test_database_folder)
+    db.add_new_symbol(
+        "AAPL",
+        {
+            "Day": 1,
+            "Month": 10,
+            "Year": 2017,
+            "Close": 0.12,
+            "Open": 0.3,
+            "High": 0.5,
+            "Low": 0.1,
+            "Volume": 200121,
+        },
+    )
+    fast_data = db.get_fast_symbol_data("AAPL")
+    assert fast_data.length == 1
+    db.write_database()
+    assert os.path.exists(os.path.join(test_database_folder,'a/AAPL'))

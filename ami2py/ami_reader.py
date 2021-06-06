@@ -65,7 +65,7 @@ class AmiReader:
             f"{symbol_name[0].lower()}/{symbol_name}"
         )
         if errorstate:
-            return []
+            return AmiSymbolDataFacade()
         return AmiSymbolDataFacade(binarry)
 
     def get_symbol_data_raw(self, symbol_name):
