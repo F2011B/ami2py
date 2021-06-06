@@ -32,6 +32,31 @@ from .consts import (
 from .ami_bitstructs import EntryChunk
 import struct
 
+entry_map = [
+    DAY,
+    MONTH,
+    YEAR,
+    MICRO_SEC,
+    MILLI_SEC,
+    SECOND,
+    MINUTE,
+    HOUR,
+    VOLUME,
+    AUX_1,
+    AUX_2,
+    TERMINATOR,
+    CLOSE,
+    OPEN,
+    HIGH,
+    LOW,
+    FUT,
+]
+
+NUM_HEADER_BYTES = 0x4A0
+
+OVERALL_ENTRY_BYTES = 40
+
+TERMINATOR_DOUBLE_WORD_LENGTH = 4
 
 Master = Struct(
     "Header" / Bytes(0x4A0),
@@ -45,6 +70,7 @@ Master = Struct(
 SymbolConstruct = Struct(
     "Header" / Bytes(0x4A0), "Entries" / GreedyRange(BitsSwapped(EntryChunk))
 )
+
 
 
 class AmiSymbolFacade:
@@ -114,9 +140,10 @@ def reverse_bits(byte_data):
 
 
 def read_date(date_tuple):
-    values = int.from_bytes(swapbitsinbytes(bytes(date_tuple)), "little")
+    values = int.from_bytes(swapbitsinbytes(bytes(reversed(date_tuple))), "little")
     return {
         # Reversed
+        # YEAR: values >>52,# This does not work ??
         YEAR: (date_tuple[7] << 4) + ((date_tuple[6] & 0xF0) >> 4),
         MONTH: date_tuple[6] & 0x0F,
         DAY: (date_tuple[5] & 0xF8) >> 3,
@@ -155,25 +182,66 @@ def create_float(float_tuple):
     return struct.unpack("<f", bytes(float_tuple))[0]
 
 
+def float_to_bin(data):
+    return bytearray(struct.pack("<f", data))
+
+
+def date_to_bin(day, month, year, hour=0, minute=0, second=0, mic_sec=0, milli_sec=0):
+    result = bytearray(8)
+    result[7] = year >> 4
+    result[6] = (result[6] & 0x0F) + (year << 4) & 0xF0
+    result[6] = (result[6] & 0xF0) + month
+    result[5] = (day << 3) + result[5] & 0xF8
+    return result
+    # Currently reading intraday data is very difficult
+    # YEAR: (date_tuple[7] << 4) + ((date_tuple[6] & 0xF0) >> 4),
+    # MONTH: date_tuple[6] & 0x0F,
+    # DAY: (date_tuple[5] & 0xF8) >> 3,
+    # # Unreversed !!!
+    # HOUR: (reverse_bits(date_tuple[5]) & 0x7)
+    # + ((reverse_bits(date_tuple[4]) & 0xC0) >> 6),
+    # MINUTE: (reverse_bits(date_tuple[4]) & 0x3F),
+    # SECOND: (reverse_bits(date_tuple[3]) & 0xFC) >> 2,
+    # MILLI_SEC: (reverse_bits(date_tuple[3]) & 0x3)
+    # + (reverse_bits(date_tuple[2]) & 0xFF),
+    # MICRO_SEC: (reverse_bits(date_tuple[1]) & 0xFF)
+    # + ((reverse_bits(date_tuple[0]) & 0xC0) >> 6),
+    # RESERVED: ((reverse_bits(date_tuple[0]) & 0x1E) >> 1),
+    # FUT: (reverse_bits(date_tuple[0]) & 0x1),
+    pass
+
+
 class AmiSymbolDataFacade:
     def __init__(self, binary):
-        self.binentries = binary[0x4A0:]
-        self.length = (len(self.binentries) - 4) // 40
-        self.stride = 40
+        self._empty = False
+        if len(binary) < NUM_HEADER_BYTES:
+            self._empty = True
+            return
+
+        self.binentries = bytearray(binary[NUM_HEADER_BYTES:])
+        self.length = (
+            len(self.binentries) - TERMINATOR_DOUBLE_WORD_LENGTH
+        ) // OVERALL_ENTRY_BYTES
+        self.stride = OVERALL_ENTRY_BYTES
+
+    def _create_blank_header(self):
+        pass
 
     def __len__(self):
         return self.length
 
     def __getitem__(self, item):
+        if self._empty:
+            return []
         if type(item) == int:
             return self._get_item_by_index(item)
         if type(item) == slice:
             result = []
         start = self._convert_to_index(item.start)
         stop = self._convert_to_index(item.stop)
-        step=item.step
+        step = item.step
         if item.step == None:
-            step=1
+            step = 1
         for i in range(start, stop, step):
             result.append(self._get_item_by_index(i))
 
@@ -206,8 +274,33 @@ class AmiSymbolDataFacade:
     def __iter__(self):
         pass
 
-    def __add__(self, other):
-        pass
+    def __iadd__(self, other):
+        # assert all (k in entry_map for k in other)
+        append_bin = date_to_bin(
+            other[DAY],
+            other[MONTH],
+            other[YEAR],
+            other[HOUR],
+            other[MINUTE],
+            other[SECOND],
+            other[MICRO_SEC],
+            other[MILLI_SEC],
+        )
+        append_bin += float_to_bin(other[CLOSE])
+        append_bin += float_to_bin(other[OPEN])
+        append_bin += float_to_bin(other[HIGH])
+        append_bin += float_to_bin(other[LOW])
+        append_bin += float_to_bin(other[VOLUME])
+        append_bin += float_to_bin(other[AUX_1])
+        append_bin += float_to_bin(other[AUX_2])
+        append_bin += float_to_bin(other[TERMINATOR])
+        self.binentries[
+            -TERMINATOR_DOUBLE_WORD_LENGTH:-TERMINATOR_DOUBLE_WORD_LENGTH
+        ] = append_bin
+        self.length = (
+            len(self.binentries) - TERMINATOR_DOUBLE_WORD_LENGTH
+        ) // OVERALL_ENTRY_BYTES
+        return self
 
 
 class SymbolConstructFast:

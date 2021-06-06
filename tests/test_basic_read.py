@@ -11,24 +11,48 @@ def test_load_pandas():
     test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
     f = open(test_data_file, "rb")
     binfile = f.read()
-    start=time.perf_counter_ns()
+    start = time.perf_counter_ns()
     data = SymbolConstruct.parse(binfile)
-    stop=time.perf_counter_ns()
-    diff=stop-start
+    stop = time.perf_counter_ns()
+    diff = stop - start
     assert len(data["Entries"]) == 600
+
 
 def test_amisymbolfacade():
     test_data_folder = os.path.dirname(__file__)
     test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
     f = open(test_data_file, "rb")
     binfile = f.read()
-    facade=AmiSymbolDataFacade(binfile)
-    assert facade.length ==600
-    test=facade[-1]
-    sliced=facade[-1:facade.length-21:-1]
+    facade = AmiSymbolDataFacade(binfile)
+    assert facade.length == 600
+    test = facade[-1]
+    sliced = facade[-1 : facade.length - 21 : -1]
     assert len(sliced) == 20
-    sliced=facade[-1:-21:-1]
+    sliced = facade[-1:-21:-1]
     assert len(sliced) == 20
+
+
+def test_add_to_amisymbolfacade():
+    test_data_folder = os.path.dirname(__file__)
+    test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
+    f = open(test_data_file, "rb")
+    binfile = f.read()
+    facade = AmiSymbolDataFacade(binfile)
+    assert facade.length == 600
+    test = facade[-1]
+    facade += test
+    assert facade.length == 601
+    assert facade[-1]["Day"] == facade[-2]["Day"]
+    assert facade[-1]["Year"] == facade[-2]["Year"]
+    assert facade[-1]["Month"] == facade[-2]["Month"]
+    assert facade[-1]["Close"] == facade[-2]["Close"]
+    assert facade[-1]["Open"] == facade[-2]["Open"]
+    assert facade[-1]["High"] == facade[-2]["High"]
+    assert facade[-1]["Low"] == facade[-2]["Low"]
+    assert facade[-1]["Volume"] == facade[-2]["Volume"]
+    assert facade[-1]["AUX1"] == facade[-2]["AUX1"]
+    assert facade[-1]["AUX2"] == facade[-2]["AUX2"]
+
 
 def test_amistruct_master(master_data):
     parsed = Master.parse(master_data)
@@ -81,6 +105,7 @@ def test_reader_SymbolData():
     data = spce.to_dict()
     assert len(data["Close"]) > 20
 
+
 # Currently the  compiled is not faster for this data
 # def test_AmiReader_compiled_should_faster():
 #     test_data_folder = os.path.dirname(__file__)
@@ -104,6 +129,3 @@ def test_reader_SymbolData():
 #     time_fast=time_fast/num_runs
 #
 #     assert time_slow > time_fast
-
-
-
