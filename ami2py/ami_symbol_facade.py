@@ -245,8 +245,8 @@ class AmiSymbolDataFacade:
         self.set_length_in_header()
 
     def set_length_in_header(self):
-        self.default_header[-3] = self.length & 0x00ff
-        self.default_header[-4] = (self.length & 0xff00) >> 8
+        self.default_header[-4] = self.length & 0x00ff
+        self.default_header[-3] = (self.length & 0xff00) >> 8
 
     def _create_blank_header(self):
         pass
