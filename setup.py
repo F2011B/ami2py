@@ -24,7 +24,7 @@ def long_description():
 
 setup(
     name="ami2py",
-    version="0.7.8",
+    version="0.7.9",
     packages=find_packages("."),
     package_dir={"": "."},
     include_package_data=True,

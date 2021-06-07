@@ -55,6 +55,7 @@ def test_add_to_amisymbolfacade():
 
 def test_amistruct_master(master_data):
     parsed = Master.parse(master_data)
+    assert parsed["NumSymbols"] == 5618
     assert parsed["Symbols"][0]["Symbol"] == "A"
     assert parsed["Symbols"][1]["Symbol"] == "AA"
 

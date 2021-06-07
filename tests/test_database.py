@@ -177,9 +177,9 @@ def test_AmiDataBase_should_create_new_db_and_add_fast_symbol_data():
         "Month": 10,
         "Year": 2017,
         "Close": 0.12,
-        "Open": 0.3,
+        "Open": 0.09,
         "High": 0.5,
-        "Low": 0.1,
+        "Low": 0.09,
         "Volume": 2001121,
     }])
 

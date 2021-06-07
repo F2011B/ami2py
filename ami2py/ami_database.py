@@ -31,6 +31,7 @@ class AmiDataBase:
     def add_symbol(self, symbol_name):
         self._master.append_symbol(symbol=symbol_name)
 
+
     def add_new_symbol(self, symbol_name, symboldata):
         self._master.append_symbol(symbol=symbol_name)
         self.read_fast_data_for_symbol(symbol_name)

@@ -26,7 +26,8 @@ from .ami_construct import SymbolConstruct, Master
 
 SYMBOL_REST = b"\0" * (1172 - 5 - 16 - 490 + 3)
 SYMBOL_SPACE = b"\0" * (495 - 5 - 3)
-SYMBOL_STR=b"\0" * (497)
+SYMBOL_STR = b"\0" * (497)
+
 
 @dataclass()
 class SymbolEntry:
@@ -174,27 +175,27 @@ class SymbolData:
 @dataclass()
 class MasterEntry:
     Symbol: str = ""
-    #Space: bytes= SYMBOL_SPACE
+    # Space: bytes= SYMBOL_SPACE
     Rest: bytes = SYMBOL_REST
 
     def to_construct_dict(self):
-        result = {"Symbol": self.Symbol, "Rest": self.Rest, "Const":None}
+        result = {"Symbol": self.Symbol, "Rest": self.Rest, "Const": None}
         return result
 
     def set_by_construct(self, con_data):
         if type(con_data["Symbol"]) != str:
             return self
-
         self.Symbol = con_data["Symbol"]
         self.Rest = con_data["Rest"]
-        #self.Space = con_data["Space"]
+        # self.Space = con_data["Space"]
         return self
 
 
 @dataclass_validate()
 @dataclass()
 class MasterData:
-    Header: bytes = b"BROKMAS2\x01\x00\x00\x00"
+    Header: bytes = b"BROKMAS2"
+    NumSymbols: int = 0
     Symbols: List[MasterEntry] = field(default_factory=list)
 
     def write_to_file(self, file):
@@ -202,6 +203,8 @@ class MasterData:
 
     def append_symbol(self, symbol: str, rest: bytes = SYMBOL_REST):
         self.Symbols.append(MasterEntry(Symbol=symbol, Rest=rest))
+        self.NumSymbols= len(self.Symbols)
+
 
     def get_symbols(self):
         return [el.Symbol for el in self.Symbols]
@@ -209,12 +212,14 @@ class MasterData:
     def to_construct_dict(self):
         result = {
             "Header": self.Header,
+            "NumSymbols": self.NumSymbols,
             "Symbols": [el.to_construct_dict() for el in self.Symbols],
         }
         return result
 
     def set_by_construct(self, con_data):
         self.Header = con_data["Header"]
+        self.NumSymbols = con_data["NumSymbols"]
         self.Symbols = [
             MasterEntry().set_by_construct(el) for el in con_data["Symbols"]
         ]

@@ -9,7 +9,9 @@ from construct import (
     bits2bytes,
     Const,
     CString,
-    Padded
+    Padded,
+    BitsInteger,
+    Int32ul
 )
 from .consts import (
     DATEPACKED,
@@ -40,7 +42,8 @@ import struct
 from construct import CString
 ascii_str=CString('ascii')
 Master = Struct(
-    "Header" / Bytes(12),
+    "Header" / Bytes(8),
+    "NumSymbols"/Int32ul,
     "Symbols"
     / GreedyRange(
         Struct(
