@@ -8,6 +8,8 @@ from construct import (
     bytes2bits,
     bits2bytes,
     Const,
+    CString,
+    Padded
 )
 from .consts import (
     DATEPACKED,
@@ -33,6 +35,7 @@ from .consts import (
 from .ami_bitstructs import EntryChunk
 import struct
 
+
 # Const(b"\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\x3F")
 from construct import CString
 ascii_str=CString('ascii')
@@ -41,7 +44,7 @@ Master = Struct(
     "Symbols"
     / GreedyRange(
         Struct(
-            "Symbol" / Bytes(492),
+            "Symbol" / Padded(492,CString('ascii')),
             "CONST"
             / Const(
                 b"\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\x3F"

@@ -173,7 +173,7 @@ class SymbolData:
 @dataclass_validate()
 @dataclass()
 class MasterEntry:
-    Symbol: str = SYMBOL_STR
+    Symbol: str = ""
     #Space: bytes= SYMBOL_SPACE
     Rest: bytes = SYMBOL_REST
 
@@ -204,7 +204,7 @@ class MasterData:
         self.Symbols.append(MasterEntry(Symbol=symbol, Rest=rest))
 
     def get_symbols(self):
-        return [ascii_str.parse(el.Symbol) for el in self.Symbols]
+        return [el.Symbol for el in self.Symbols]
 
     def to_construct_dict(self):
         result = {

@@ -224,23 +224,29 @@ class AmiSymbolDataFacade:
             )
             self.binentries = self.binary[NUM_HEADER_BYTES:]
             self.length = 0
+            self.set_length_in_header()
             return
 
         enough_bytes = len(binary) >= (NUM_HEADER_BYTES + TERMINATOR_DOUBLE_WORD_LENGTH)
         if not enough_bytes:
             self._empty = True
+            self.length = 0
+            self.set_length_in_header()
             self.binary=self.default_header+bytearray(
                                   TERMINATOR_DOUBLE_WORD_LENGTH
                                   )
             self.binentries = self.binary[NUM_HEADER_BYTES:]
-            self.length = 0
             return
         self.binary=bytearray(self.binary)
         self.binentries = bytearray(binary[NUM_HEADER_BYTES:])
         self.length = (
             len(self.binentries) - TERMINATOR_DOUBLE_WORD_LENGTH
         ) // OVERALL_ENTRY_BYTES
+        self.set_length_in_header()
 
+    def set_length_in_header(self):
+        self.default_header[-3] = self.length & 0x00ff
+        self.default_header[-4] = (self.length & 0xff00) >> 8
 
     def _create_blank_header(self):
         pass
@@ -339,10 +345,11 @@ class AmiSymbolDataFacade:
         self.binentries[
             -TERMINATOR_DOUBLE_WORD_LENGTH:-TERMINATOR_DOUBLE_WORD_LENGTH
         ] = append_bin
-        self.binary[NUM_HEADER_BYTES:]=self.binentries
         self.length = (
             len(self.binentries) - TERMINATOR_DOUBLE_WORD_LENGTH
         ) // OVERALL_ENTRY_BYTES
+        self.set_length_in_header()
+        self.binary = self.default_header + self.binentries
         return self
 
 
