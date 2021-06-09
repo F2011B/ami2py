@@ -107,12 +107,10 @@ it is necessary.
 
 Todos
 --------------------
-* Created Database is readable, however the last data point of a symbol gets displayed not correctly.
 * Write tests for intraday data, currently data structures is able to handle intraday data. 
   But no tests had been written, until now. 
   This is considered mandatory to reach version 1.0.0  
 * Add docstrings to the source code. This seems to be a minor task.
-* Currently no real life performance measures have been done. 
 
 
 
