@@ -25,6 +25,14 @@ from .consts import (
 
 SwappedField = BitsSwapped(FormatField("<", "f"))
 
+DateShort=BitsSwapped(BitStruct(
+    MINUTE / BitsInteger(length=6),  # 38
+    HOUR / BitsInteger(length=5),  # 43
+    DAY / RevBitsInteger(length=5),  # Bit 48 Byte 6
+    MONTH / RevBitsInteger(length=4),  # 52
+    YEAR / RevBitsInteger(length=12),
+))
+
 Date=BitStruct(
     FUT / BitsInteger(length=1),  # 1
     RESERVED / BitsInteger(length=5),  # 6
