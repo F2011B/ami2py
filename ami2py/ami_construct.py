@@ -37,6 +37,10 @@ from .consts import (
 )
 from .ami_bitstructs import EntryChunk,DateShort
 import struct
+
+DIVIDEND_PAY_DATE = "Dividend Pay Date"
+
+DELISTING_DATE = "Delisting Date"
 SwappedField = FormatField("<", "f")
 
 # Const(b"\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\x3F")
@@ -67,28 +71,28 @@ SymbolHeader = Struct(
     "SymbolName" / Padded(144, CString("ascii")), #144 + 8 = 152
     "FullName" / Padded(348, CString("ascii")), # 152+349 =501
     #"Const"/Bytes(16),# 16 +501 =517
-    "First_Const"/DateShort,
-    "Second_Const"/SwappedField,
-    "Third_Const"/SwappedField,
-    "Fourth_Const"/SwappedField,
-    "Round Lot Size"/SwappedField,
-    "Tick size"/SwappedField,
-    "Filler_3"/SwappedField,
-    "Filler_4"/SwappedField,
-    "Filler_5"/SwappedField,
-    "Last Split Date"/DateShort,
-    "Filler_7"/SwappedField,
-    "Delisting Date"/DateShort,
-    "Filler_9"/SwappedField,
-    "Ex-Dividend Date"/DateShort,
-    "Shares Float"/SwappedField,
-    "Shares Out"/SwappedField,
-    "Dividend"/SwappedField,
-    "Book Value(p.s.)"/SwappedField,
-    "PEG Ratio"/SwappedField,
-    "Profit Margin"/SwappedField,
-    "Operating Margin"/SwappedField,
-    "1yr target price"/SwappedField,
+    "First_Const"/SwappedField,
+    "Second_Const" / SwappedField,
+    "Third_Const" / SwappedField,
+    "Fourth_Const" / SwappedField,
+    "Round Lot Size" / SwappedField,
+    "Tick size" / SwappedField,
+    "Filler_3" / SwappedField,
+    "Filler_4" / SwappedField,
+    "Filler_5" / SwappedField,
+    "Last Split Date" / DateShort,
+    "Filler_7" / SwappedField,
+    DIVIDEND_PAY_DATE / DateShort,
+    "Filler_9" / SwappedField,
+    "Ex-Dividend Date" / DateShort,
+    "Shares Float" / SwappedField,
+    "Shares Out" / SwappedField,
+    "Dividend" / SwappedField,
+    "Book Value(p.s.)" / SwappedField,
+    "PEG Ratio" / SwappedField,
+    "Profit Margin" / SwappedField,
+    "Operating Margin" / SwappedField,
+    "1yr target price" / SwappedField,
     "Return on Assets (ttm)"/SwappedField,
     "Return on Equity (ttm)"/SwappedField,
     "Qtrly Rev. Growth"/SwappedField,
@@ -113,9 +117,9 @@ SymbolHeader = Struct(
     "Filler_40"/SwappedField,
     "Filler_41"/SwappedField,
     "Filler_42"/SwappedField, # 685
-    "Filler_43"/SwappedField,
+    "A Date"/SwappedField,
     "Filler_44"/SwappedField,
-    "Filler_45"/SwappedField,
+    DELISTING_DATE/DateShort,
     "Filler_46"/SwappedField,
     "Filler_47"/SwappedField,
     "Filler_48"/SwappedField,
@@ -123,7 +127,22 @@ SymbolHeader = Struct(
     "Filler_50"/SwappedField,
     "Filler_51"/SwappedField,
     "Filler_52"/SwappedField,
-    "Space"/Bytes(456),
+    "Filler_53"/SwappedField,
+    "Filler_54"/SwappedField,
+    "Filler_55"/SwappedField,
+    "Filler_56"/SwappedField,
+    "Filler_57"/SwappedField,
+    "Filler_58"/SwappedField,
+    "Filler_59"/SwappedField,
+    "Filler_60"/SwappedField,
+    "Filler_61"/SwappedField,
+    "Filler_62"/SwappedField,
+    "Filler_63"/SwappedField,
+    "Filler_64"/SwappedField,
+    "Filler_65"/SwappedField,
+    "Filler_66"/SwappedField,
+    "Filler_67"/SwappedField,
+    "Space"/Bytes(396),
     "Length"/Int32ul
 )
 SymbolConstruct = Struct(

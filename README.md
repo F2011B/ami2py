@@ -18,6 +18,15 @@ Therefore, no warranty is given and handle with care. <br/>
 Improvement requests are always welcome.<br/>
 This module can be used to create a database and write symbol data to that. <br/> 
 However, it seems to be a good idea to use the official quote downloader program for productive usage.<br/>
+__________________________________________________
+
+
+Important
+---------
+On Windows there are special file names, e.g. "CON"
+In case such a file is opened and data is written into every data written 
+is printed to the console.
+Therefore, by default the command add_new_symbol renames symbol names like CON.DE into C_O_N.DE.
 
 Examples
 ---------

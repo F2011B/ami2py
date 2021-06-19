@@ -10,9 +10,10 @@ def symbolpath(root, symbol):
 
 
 class AmiDataBase:
-    def __init__(self, folder, use_compiled=False):
+    def __init__(self, folder, use_compiled=False, avoid_windows_file=True):
         if not os.path.exists(folder):
             os.mkdir(folder)
+        self.avoid_windows_file = avoid_windows_file
         self.reader = AmiReader(folder, use_compiled=use_compiled)
         self._symbol_cache = {}
         self._fast_symbol_cache = {}
@@ -31,8 +32,21 @@ class AmiDataBase:
     def add_symbol(self, symbol_name):
         self._master.append_symbol(symbol=symbol_name)
 
-
     def add_new_symbol(self, symbol_name, symboldata):
+        if self.avoid_windows_file:
+            new_symbol_name = self._replace_windows_pipe_file(symbol_name)
+            self._add_new_symbol(new_symbol_name, symboldata)
+        else:
+            self._add_new_symbol(symbol_name, symboldata)
+
+    def _replace_windows_pipe_file(self, symbol_name):
+        wfiles = ["CON", "AUX", "LST", "PRN", "NUL", "EOF", "INP", "OUT"]
+        result = symbol_name
+        if symbol_name[:3] in wfiles:
+            result = symbol_name.replace(symbol_name[:3], "_".join(symbol_name[:3]))
+        return result
+
+    def _add_new_symbol(self, symbol_name, symboldata):
         self._master.append_symbol(symbol=symbol_name)
         self.read_fast_data_for_symbol(symbol_name)
         if type(symboldata) == dict:
