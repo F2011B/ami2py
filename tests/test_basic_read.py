@@ -6,6 +6,7 @@ import os
 from ami2py.ami_symbol_facade import AmiSymbolDataFacade
 
 
+
 def test_symbol_header():
     test_data_folder = os.path.dirname(__file__)
     header_data_path = os.path.join(test_data_folder, "./HeaderData/3DA.AX")
