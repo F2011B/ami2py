@@ -17,6 +17,11 @@ def master_data():
     return binfile
 
 @pytest.fixture
+def index_db():
+    return os.path.join(test_data_folder, "./TestDB")
+
+
+@pytest.fixture
 def symbol_spce():
     test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
     try:

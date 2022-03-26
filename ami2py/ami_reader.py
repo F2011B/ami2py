@@ -5,6 +5,7 @@ from .ami_symbol_facade import AmiSymbolDataFacade
 # from .ami_symbol import compiled as SymbolConstruct
 from .consts import YEAR, DAY, MONTH, CLOSE, OPEN, HIGH, LOW, VOLUME, DATEPACKED
 import os
+from .ami_database_folder_layout import AmiDbFolderLayout
 
 ERROR_RETURNED = True
 
@@ -12,7 +13,7 @@ VALUE_INDEX = 2
 BROKER_MASTER = "broker.master"
 
 
-class AmiReader:
+class AmiReader(AmiDbFolderLayout):
     def __init__(self, folder, use_compiled=False):
         self.__folder = folder
         self.__symbol = SymbolConstruct
@@ -42,19 +43,16 @@ class AmiReader:
     def __read_symbols(self):
         return self.__master.get_symbols()
 
-    def __get_binarry(self, filename):
+    def __get_binarry(self, symbol_name):
         """
 
         :param filename:
         :return: binarray, error state, errormsg
         """
-        if not os.path.isdir(self.__folder):
-            return [], ERROR_RETURNED, f"{self.__folder} is not a directory"
-        brokerfile = os.path.join(self.__folder, filename)
-
-        if not os.path.isfile(brokerfile):
-            return [], ERROR_RETURNED, f"{brokerfile} is not a file"
-        binarry = open(brokerfile, "rb").read()
+        filename=self._get_symbol_path(self.__folder, symbol_name)
+        if not os.path.isfile(filename):
+            return [], ERROR_RETURNED, f"{filename} is not a file"
+        binarry = open(filename, "rb").read()
         return binarry, False, ""
 
     def get_symbols(self):
@@ -62,16 +60,14 @@ class AmiReader:
 
     def get_fast_symbol_data(self, symbol_name):
         binarry, errorstate, errmsg = self.__get_binarry(
-            f"{symbol_name[0].lower()}/{symbol_name}"
+            symbol_name
         )
         if errorstate:
             return AmiSymbolDataFacade()
         return AmiSymbolDataFacade(binarry)
 
     def get_symbol_data_raw(self, symbol_name):
-        binarry, errorstate, errmsg = self.__get_binarry(
-            f"{symbol_name[0].lower()}/{symbol_name}"
-        )
+        binarry, errorstate, errmsg = self.__get_binarry(symbol_name)
         if errorstate:
             return []
         data = self.__symbol.parse(binarry)
@@ -107,9 +103,7 @@ class AmiReader:
         return result
 
     def get_symbol_data(self, symbol_name):
-        binarry, errorstate, errmsg = self.__get_binarry(
-            f"{symbol_name[0].lower()}/{symbol_name}"
-        )
+        binarry, errorstate, errmsg = self.__get_binarry(symbol_name)
         if errorstate == ERROR_RETURNED:
             return SymbolData()
 

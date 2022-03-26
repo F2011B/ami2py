@@ -2,6 +2,7 @@ from ami2py import AmiDataBase
 from ami2py import SymbolEntry
 import os
 import shutil
+import pytest
 
 test_data_folder = os.path.dirname(__file__)
 
@@ -154,38 +155,46 @@ def test_AmiDataBase_should_create_new_db_and_add_fast_symbol_data():
     )
     fast_data = db.get_fast_symbol_data("AAPL")
     assert fast_data.length == 1
-    db.append_to_symbol("AAPL",[{
-        "Day": 2,
-        "Month": 10,
-        "Year": 2017,
-        "Close": 0.12,
-        "Open": 0.3,
-        "High": 0.5,
-        "Low": 0.1,
-        "Volume": 2001,
-    },{
-        "Day": 3,
-        "Month": 10,
-        "Year": 2017,
-        "Close": 0.12,
-        "Open": 0.3,
-        "High": 0.5,
-        "Low": 0.1,
-        "Volume": 2001121,
-    },{
-        "Day": 4,
-        "Month": 10,
-        "Year": 2017,
-        "Close": 0.12,
-        "Open": 0.09,
-        "High": 0.5,
-        "Low": 0.09,
-        "Volume": 2001121,
-    }])
+    db.append_to_symbol(
+        "AAPL",
+        [
+            {
+                "Day": 2,
+                "Month": 10,
+                "Year": 2017,
+                "Close": 0.12,
+                "Open": 0.3,
+                "High": 0.5,
+                "Low": 0.1,
+                "Volume": 2001,
+            },
+            {
+                "Day": 3,
+                "Month": 10,
+                "Year": 2017,
+                "Close": 0.12,
+                "Open": 0.3,
+                "High": 0.5,
+                "Low": 0.1,
+                "Volume": 2001121,
+            },
+            {
+                "Day": 4,
+                "Month": 10,
+                "Year": 2017,
+                "Close": 0.12,
+                "Open": 0.09,
+                "High": 0.5,
+                "Low": 0.09,
+                "Volume": 2001121,
+            },
+        ],
+    )
 
     assert fast_data.length == 4
     db.write_database()
-    assert os.path.exists(os.path.join(test_database_folder,'a/AAPL'))
+    assert os.path.exists(os.path.join(test_database_folder, "a/AAPL"))
+
 
 def test_AmiDataBase_should_create_new_db_and_add_fast_symbol_data_and_avoiding_windows_piping_conflicts():
     # Setup folders
@@ -209,35 +218,133 @@ def test_AmiDataBase_should_create_new_db_and_add_fast_symbol_data_and_avoiding_
     )
     fast_data = db.get_fast_symbol_data("C_O_N.DE")
     assert fast_data.length == 1
-    db.append_to_symbol("C_O_N.DE",[{
-        "Day": 2,
-        "Month": 10,
-        "Year": 2017,
-        "Close": 0.12,
-        "Open": 0.3,
-        "High": 0.5,
-        "Low": 0.1,
-        "Volume": 2001,
-    },{
-        "Day": 3,
-        "Month": 10,
-        "Year": 2017,
-        "Close": 0.12,
-        "Open": 0.3,
-        "High": 0.5,
-        "Low": 0.1,
-        "Volume": 2001121,
-    },{
-        "Day": 4,
-        "Month": 10,
-        "Year": 2017,
-        "Close": 0.12,
-        "Open": 0.09,
-        "High": 0.5,
-        "Low": 0.09,
-        "Volume": 2001121,
-    }])
+    db.append_to_symbol(
+        "C_O_N.DE",
+        [
+            {
+                "Day": 2,
+                "Month": 10,
+                "Year": 2017,
+                "Close": 0.12,
+                "Open": 0.3,
+                "High": 0.5,
+                "Low": 0.1,
+                "Volume": 2001,
+            },
+            {
+                "Day": 3,
+                "Month": 10,
+                "Year": 2017,
+                "Close": 0.12,
+                "Open": 0.3,
+                "High": 0.5,
+                "Low": 0.1,
+                "Volume": 2001121,
+            },
+            {
+                "Day": 4,
+                "Month": 10,
+                "Year": 2017,
+                "Close": 0.12,
+                "Open": 0.09,
+                "High": 0.5,
+                "Low": 0.09,
+                "Volume": 2001121,
+            },
+        ],
+    )
 
     assert fast_data.length == 4
     db.write_database()
-    assert os.path.exists(os.path.join(test_database_folder,'c/C_O_N.DE'))
+    assert os.path.exists(os.path.join(test_database_folder, "c/C_O_N.DE"))
+
+
+@pytest.mark.parametrize("symbol", ["^GSPC", "@ES_C", "~~~EQUITY"])
+def test_AmiDataBase_should_create_new_db_and_add_hat_containing_symbol(
+    tmp_path, symbol
+):
+    # Setup folders
+    test_database_folder = tmp_path / "NewData"
+    if os.path.exists(test_database_folder):
+        shutil.rmtree(test_database_folder)
+    # Create Amibroker Database
+    db = AmiDataBase(test_database_folder)
+    db.add_new_symbol(
+        symbol,
+        {
+            "Day": 1,
+            "Month": 10,
+            "Year": 2017,
+            "Close": 0.12,
+            "Open": 0.3,
+            "High": 0.5,
+            "Low": 0.1,
+            "Volume": 200121,
+        },
+    )
+    fast_data = db.get_fast_symbol_data(symbol)
+    assert fast_data.length == 1
+    db.append_to_symbol(
+        symbol,
+        [
+            {
+                "Day": 2,
+                "Month": 10,
+                "Year": 2017,
+                "Close": 0.12,
+                "Open": 0.3,
+                "High": 0.5,
+                "Low": 0.1,
+                "Volume": 2001,
+            },
+            {
+                "Day": 3,
+                "Month": 10,
+                "Year": 2017,
+                "Close": 0.12,
+                "Open": 0.3,
+                "High": 0.5,
+                "Low": 0.1,
+                "Volume": 2001121,
+            },
+            {
+                "Day": 4,
+                "Month": 10,
+                "Year": 2017,
+                "Close": 0.12,
+                "Open": 0.09,
+                "High": 0.5,
+                "Low": 0.09,
+                "Volume": 2001121,
+            },
+        ],
+    )
+
+    assert fast_data.length == 4
+    db.write_database()
+    assert os.path.exists(os.path.join(test_database_folder, f"_/{symbol}"))
+
+
+def test_AmiDataBase_can_read_index_symbol(index_db):
+    db = AmiDataBase(index_db)
+    gdaxi = db.get_dict_for_symbol("^GDAXI")
+    assert gdaxi["Day"][0] == 3
+    assert gdaxi["Month"][0] == 1
+    assert gdaxi["Month"][-1] == 11
+    assert gdaxi["Close"][0] == 6750.759765625
+
+
+def test_AmiDataBase_can_read_tilde_symbol(index_db):
+    db = AmiDataBase(index_db)
+    equity = db.get_dict_for_symbol("~~~EQUITY")
+    assert equity["Day"][0] == 2
+    assert equity["Month"][0] == 1
+    assert equity["Year"][0] == 1996
+
+
+def test_AmiDataBase_can_read_at_symbol(index_db):
+    db = AmiDataBase(index_db)
+    equity = db.get_dict_for_symbol("@ES_C")
+    assert equity["Day"][0] == 29
+    assert equity["Month"][0] == 8
+    assert equity["Year"][0] == 2003

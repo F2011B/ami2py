@@ -4,12 +4,14 @@ from .ami_construct import Master, SymbolConstruct
 from pathlib import Path
 import os
 
+from .ami_database_folder_layout import AmiDbFolderLayout
+
 
 def symbolpath(root, symbol):
     return os.path.join(root, f"{symbol[0].lower()}/{symbol}")
 
 
-class AmiDataBase:
+class AmiDataBase(AmiDbFolderLayout):
     def __init__(self, folder, use_compiled=False, avoid_windows_file=True):
         if not os.path.exists(folder):
             os.mkdir(folder)
@@ -78,7 +80,8 @@ class AmiDataBase:
                 f.close()
 
     def ensure_symbol_folder(self, symbol):
-        Path(os.path.join(self.folder, symbol[0].lower())).mkdir(
+        symb_root=self.get_symbol_root_folder(symbol)
+        Path(os.path.join(self.folder, symb_root)).mkdir(
             parents=True, exist_ok=True
         )
 
@@ -93,7 +96,7 @@ class AmiDataBase:
         for symbol in self._fast_symbol_cache:
             newbin = self._fast_symbol_cache[symbol].binary
             self.ensure_symbol_folder(symbol)
-            f = open(symbolpath(self.folder, symbol), "wb")
+            f = open(self._get_symbol_path(self.folder, symbol), "wb")
             try:
                 f.write(newbin)
             finally:
@@ -104,7 +107,7 @@ class AmiDataBase:
                 self._symbol_cache[symbol].to_construct_dict()
             )
             self.ensure_symbol_folder(symbol)
-            f = open(symbolpath(self.folder, symbol), "wb")
+            f = open(self._get_symbol_path(self.folder, symbol), "wb")
             try:
                 f.write(newbin)
             finally:
