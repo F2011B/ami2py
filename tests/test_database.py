@@ -25,7 +25,6 @@ def test_AmiDataBase_should_get_dict_for_symbol():
     assert aapl["Month"][0] == 9
     assert aapl["Year"][0] == 2017
 
-
 def test_AmiDataBase_should_get_fastdata_for_symbol():
     test_database_folder = os.path.join(test_data_folder, "./TestData")
     db = AmiDataBase(test_database_folder)
@@ -36,6 +35,18 @@ def test_AmiDataBase_should_get_fastdata_for_symbol():
     assert symbol[0]["Year"] == 2017
     assert len(symbol[0:10]) == 10
 
+def test_AmiDataBase_should_get_fastdata_for_symbol_negative_indexed():
+    test_database_folder = os.path.join(test_data_folder, "./TestData")
+    db = AmiDataBase(test_database_folder)
+    symbol = db.get_fast_symbol_data("SPCE")
+    assert len(symbol) > 10
+    assert symbol[-1]["Day"] == 19
+    assert symbol[-1]["Month"] == 2
+    assert symbol[-1]["Year"] == 2020
+    assert round(symbol[-1]["Open"],2) == 34.3
+    assert round(symbol[-1]["Close"], 2) == 37.35
+    assert round(symbol[-1]["High"], 2) == 37.5
+    assert round(symbol[-1]["Low"], 2) == 32
 
 def test_AmiDataBase_should_append_symbol_entry():
     test_database_folder = os.path.join(test_data_folder, "./TestData")

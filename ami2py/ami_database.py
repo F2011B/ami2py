@@ -34,7 +34,7 @@ class AmiDataBase(AmiDbFolderLayout):
     def add_symbol(self, symbol_name):
         self._master.append_symbol(symbol=symbol_name)
 
-    def add_new_symbol(self, symbol_name, symboldata):
+    def add_new_symbol(self, symbol_name, symboldata=None):
         if self.avoid_windows_file:
             new_symbol_name = self._replace_windows_pipe_file(symbol_name)
             self._add_new_symbol(new_symbol_name, symboldata)
@@ -48,12 +48,12 @@ class AmiDataBase(AmiDbFolderLayout):
             result = symbol_name.replace(symbol_name[:3], "_".join(symbol_name[:3]))
         return result
 
-    def _add_new_symbol(self, symbol_name, symboldata):
+    def _add_new_symbol(self, symbol_name, symboldata=None):
         self._master.append_symbol(symbol=symbol_name)
         self.read_fast_data_for_symbol(symbol_name)
-        if type(symboldata) == dict:
+        if isinstance(symboldata, dict):
             self._fast_symbol_cache[symbol_name] += symboldata
-        if type(symboldata) == list:
+        if isinstance(symboldata, list):
             for el in symboldata:
                 self._fast_symbol_cache[symbol_name] += el
 

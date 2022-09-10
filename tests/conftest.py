@@ -4,7 +4,8 @@ import pytest
 
 
 test_data_folder = os.path.dirname(__file__)
-
+def pytest_configure():
+    pytest.TEST_DATABASE_FOLDER = os.path.join(test_data_folder, "./TestData")
 
 @pytest.fixture
 def master_data():
@@ -30,5 +31,8 @@ def symbol_spce():
     finally:
         f.close()
     return binfile
+
+
+
 
 
