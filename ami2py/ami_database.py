@@ -124,25 +124,19 @@ class AmiDataBase(AmiDbFolderLayout):
     def read_raw_data_for_symbol(self, symbol_name):
         return self.reader.get_symbol_data_raw(symbol_name)
 
-    def get_dict_for_symbol(self, symbol_name):
-        if symbol_name in self._symbol_cache:
-            return self._symbol_cache[symbol_name].to_dict()
-
-        self.read_data_for_symbol(symbol_name)
+    def get_dict_for_symbol(self, symbol_name, force_refresh=False):
+        if force_refresh or symbol_name not in self._symbol_cache:
+            self.read_data_for_symbol(symbol_name)
         return self._symbol_cache[symbol_name].to_dict()
 
-    def get_symbol_data(self, symbol_name):
-        if symbol_name in self._symbol_cache:
-            return self._symbol_cache[symbol_name]
-
-        self.read_data_for_symbol(symbol_name)
+    def get_symbol_data(self, symbol_name, force_refresh=False):
+        if force_refresh or symbol_name not in self._symbol_cache:
+            self.read_data_for_symbol(symbol_name)
         return self._symbol_cache[symbol_name]
 
-    def get_fast_symbol_data(self, symbol_name):
-        if symbol_name in self._fast_symbol_cache:
-            return self._fast_symbol_cache[symbol_name]
-
-        self.read_fast_data_for_symbol(symbol_name)
+    def get_fast_symbol_data(self, symbol_name, force_refresh=False):
+        if force_refresh or symbol_name not in self._fast_symbol_cache:
+            self.read_fast_data_for_symbol(symbol_name)
         return self._fast_symbol_cache[symbol_name]
 
     def append_symbole_entry(self, symbol, data: SymbolEntry):
