@@ -145,6 +145,15 @@ class AmiDataBase(AmiDbFolderLayout):
         self.read_fast_data_for_symbol(symbol_name)
         return self._fast_symbol_cache[symbol_name]
 
+    def append_symbol_entry(self, symbol, data: SymbolEntry):
+        """Append a :class:`SymbolEntry` to ``symbol``.
+
+        This method supersedes the old :func:`append_symbole_entry` with the
+        correct spelling and simply forwards to it for backwards
+        compatibility.
+        """
+        return self.append_symbole_entry(symbol, data)
+
     def append_symbole_entry(self, symbol, data: SymbolEntry):
         """
         :param symbol: name of the symbol to which data should be appended

@@ -38,7 +38,7 @@ AmiDataBase constructor. This is a more or less experimental feature.
     >>> from ami2py import AmiDataBase, SymbolEntry
     >>> db = AmiDataBase(db_folder)
     >>> db.add_symbol("AAPL")    
-    >>> db.append_data_to_symbol(
+    >>> db.append_symbol_entry(
             "AAPL",
             SymbolEntry(
                 Close=200.0,
