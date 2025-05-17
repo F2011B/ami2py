@@ -168,7 +168,10 @@ class AmiDataBase(AmiDbFolderLayout):
         assert type(symbol_data) == dict
         for symbol in symbol_data:
             assert type(symbol_data[symbol]) == dict
-            all(el in symbol_data[symbol] for el in SymbolEntry.get_necessary_args())
+            assert all(
+                el in symbol_data[symbol]
+                for el in SymbolEntry.get_necessary_args()
+            )
             symbol_lengths = [len(symbol_data[symbol][k]) for k in symbol_data[symbol]]
             assert min(symbol_lengths) == max(symbol_lengths)
             data = [
@@ -180,4 +183,5 @@ class AmiDataBase(AmiDbFolderLayout):
             if symbol not in self._symbol_cache:
                 self._symbol_cache[symbol] = SymbolData(Entries=data)
             else:
-                self._symbol_cache[symbol].append(data)
+                for entry in data:
+                    self._symbol_cache[symbol].append(entry)
