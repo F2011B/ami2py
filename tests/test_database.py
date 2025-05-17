@@ -53,7 +53,7 @@ def test_AmiDataBase_should_append_symbol_entry():
     db = AmiDataBase(test_database_folder)
     # Only data for the symbol SPCE is contained in the TestData folder !!
     try:
-        db.append_symbole_entry(
+        db.append_symbol_entry(
             "AAPL",
             SymbolEntry(
                 Close=200.0,
@@ -66,7 +66,7 @@ def test_AmiDataBase_should_append_symbol_entry():
                 Day=17,
             ),
         )
-        db.append_symbole_entry(
+        db.append_symbol_entry(
             "AAPL",
             SymbolEntry(
                 Close=200,
@@ -187,7 +187,7 @@ def test_AmiDataBase_should_create_new_db():
     db = AmiDataBase(test_database_folder)
     db.add_symbol("AAPL")
     try:
-        db.append_symbole_entry(
+        db.append_symbol_entry(
             "AAPL",
             SymbolEntry(
                 Close=200.0,
