@@ -73,6 +73,14 @@ Getting values for a symbol in a pandas compatible dicitonary format.
         "Day": [17,........],
     }
 
+`get_dict_for_symbol` caches the returned data for subsequent calls. If the
+underlying database has changed, pass `force_refresh=True` to reload the latest
+values from disk:
+
+```python
+>>> db.get_dict_for_symbol("SPCE", force_refresh=True)
+```
+
 Using a list container facade for fast reading of symbol data. 
 The previous mentioned methods to read symbol data from the database use construct to 
 convert the binary array into a hierarchical object structure. 
