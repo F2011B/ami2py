@@ -114,6 +114,37 @@ def test_AmiDataBase_should_append_symbol_data():
     assert len(aapl["Day"]) == 2
 
 
+def test_AmiDataBase_should_append_symbol_data_existing_symbol():
+    test_database_folder = os.path.join(test_data_folder, "./TestData")
+    db = AmiDataBase(test_database_folder)
+    db.get_dict_for_symbol("SPCE")
+    original = db.get_dict_for_symbol("SPCE")
+    original_length = len(original["Day"])
+    new_entries = {
+        "SPCE": {
+            "Close": [42.1, 43.2],
+            "High": [44.1, 45.2],
+            "Low": [41.0, 42.0],
+            "Open": [41.5, 42.5],
+            "Volume": [1500.0, 1600.0],
+            "Month": [1, 1],
+            "Year": [2025, 2025],
+            "Day": [1, 2],
+        }
+    }
+    db.append_symbol_data(new_entries)
+    updated = db.get_dict_for_symbol("SPCE")
+    assert len(updated["Day"]) == original_length + 2
+    assert updated["Day"][-2:] == [1, 2]
+    assert updated["Month"][-2:] == [1, 1]
+    assert updated["Year"][-2:] == [2025, 2025]
+    assert updated["Close"][-2:] == [42.1, 43.2]
+    assert updated["High"][-2:] == [44.1, 45.2]
+    assert updated["Low"][-2:] == [41.0, 42.0]
+    assert updated["Open"][-2:] == [41.5, 42.5]
+    assert updated["Volume"][-2:] == [1500.0, 1600.0]
+
+
 def test_append_symbol_data_twice_increases_entries():
     test_database_folder = os.path.join(test_data_folder, "./TestData")
     db = AmiDataBase(test_database_folder)
