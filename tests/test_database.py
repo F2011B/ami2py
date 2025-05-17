@@ -114,6 +114,39 @@ def test_AmiDataBase_should_append_symbol_data():
     assert len(aapl["Day"]) == 2
 
 
+def test_append_symbol_data_twice_increases_entries():
+    test_database_folder = os.path.join(test_data_folder, "./TestData")
+    db = AmiDataBase(test_database_folder)
+    first = {
+        "AAPL": {
+            "Close": [200.0, 201.0],
+            "High": [202, 203],
+            "Low": [199, 199.1],
+            "Open": [200, 200],
+            "Volume": [200001212.0, 213001311],
+            "Month": [12, 12],
+            "Year": [2020, 2020],
+            "Day": [17, 18],
+        }
+    }
+    second = {
+        "AAPL": {
+            "Close": [202.0, 203.0],
+            "High": [204, 205],
+            "Low": [200, 200.1],
+            "Open": [202, 203],
+            "Volume": [220001212.0, 230001311],
+            "Month": [12, 12],
+            "Year": [2020, 2020],
+            "Day": [19, 20],
+        }
+    }
+    db.append_symbol_data(first)
+    db.append_symbol_data(second)
+    aapl = db.get_dict_for_symbol("AAPL")
+    assert len(aapl["Day"]) == 4
+
+
 def test_AmiDataBase_should_create_new_db():
     # Setup folders
     test_database_folder = os.path.join(test_data_folder, "./NewData")

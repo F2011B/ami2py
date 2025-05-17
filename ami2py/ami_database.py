@@ -180,4 +180,5 @@ class AmiDataBase(AmiDbFolderLayout):
             if symbol not in self._symbol_cache:
                 self._symbol_cache[symbol] = SymbolData(Entries=data)
             else:
-                self._symbol_cache[symbol].append(data)
+                for entry in data:
+                    self._symbol_cache[symbol].append(entry)
