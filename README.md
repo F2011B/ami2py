@@ -67,7 +67,6 @@ Getting values for a symbol in a pandas compatible dicitonary format.
         "Close": [200.0,....],
         "High": [230.0,.....],
         "Low": [190.0,.....],
-        "Open": [210.0,.......],
         "Volume": [200003122.0,.....],
         "Month": [12,.......],
         "Year": [2020,.......],
