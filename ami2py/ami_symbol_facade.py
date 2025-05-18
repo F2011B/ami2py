@@ -246,9 +246,6 @@ class AmiSymbolDataFacade:
         # self.default_header[-2] = (self.length & 0xff0000) >> 16
         # self.default_header[-1] = (self.length & 0xff000000) >> 24
 
-    def _create_blank_header(self):
-        pass
-
     def __len__(self):
         return self.length
 
@@ -294,7 +291,8 @@ class AmiSymbolDataFacade:
         }
 
     def __iter__(self):
-        pass
+        for i in range(self.length):
+            yield self._get_item_by_index(i)
 
     def __iadd__(self, other):
         # assert all (k in entry_map for k in other)

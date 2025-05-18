@@ -241,6 +241,50 @@ def test_append_symbol_data_without_preload(tmp_path):
     assert len(updated["Day"]) == original_length + 1
     assert updated["Day"][-1] == 2
     assert updated["Month"][-1] == 2
+    
+    
+def test_add_symbol_data_dict_existing_symbol_fast():
+    test_database_folder = os.path.join(test_data_folder, "./TestData")
+    db = AmiDataBase(test_database_folder)
+    original_len = db.get_fast_symbol_data("SPCE").length
+    db.add_symbol_data_dict(
+        {
+            "SPCE": {
+                "Close": [50.0],
+                "High": [51.0],
+                "Low": [49.0],
+                "Open": [50.5],
+                "Volume": [1000.0],
+                "Month": [1],
+                "Year": [2030],
+                "Day": [1],
+            }
+        }
+    )
+    fast = db.get_fast_symbol_data("SPCE")
+    assert fast.length == original_len + 1
+    assert fast[-1]["Day"] == 1
+
+
+def test_add_symbol_data_dict_new_symbol_fast():
+    test_database_folder = os.path.join(test_data_folder, "./TestData")
+    db = AmiDataBase(test_database_folder)
+    db.add_symbol_data_dict(
+        {
+            "AAPL": {
+                "Close": [1.1, 1.2],
+                "High": [1.2, 1.3],
+                "Low": [1.0, 1.1],
+                "Open": [1.05, 1.15],
+                "Volume": [100.0, 200.0],
+                "Month": [2, 2],
+                "Year": [2024, 2024],
+                "Day": [1, 2],
+            }
+        }
+    )
+    fast = db.get_fast_symbol_data("AAPL")
+    assert fast.length == 2
 
 
 def test_AmiDataBase_should_create_new_db():

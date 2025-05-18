@@ -70,6 +70,17 @@ def test_add_to_amisymbolfacade():
     assert facade[-1]["AUX2"] == facade[-2]["AUX2"]
 
 
+def test_iter_amisymbolfacade():
+    test_data_folder = os.path.dirname(__file__)
+    test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
+    with open(test_data_file, "rb") as f:
+        binfile = f.read()
+    facade = AmiSymbolDataFacade(binfile)
+    first_iter = next(iter(facade))
+    assert first_iter == facade[0]
+    assert sum(1 for _ in facade) == facade.length
+
+
 def test_amistruct_master(master_data):
     parsed = Master.parse(master_data)
     assert parsed["NumSymbols"] == 5618
