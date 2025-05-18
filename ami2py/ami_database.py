@@ -80,10 +80,8 @@ class AmiDataBase(AmiDbFolderLayout):
                 f.close()
 
     def ensure_symbol_folder(self, symbol):
-        symb_root=self.get_symbol_root_folder(symbol)
-        Path(os.path.join(self.folder, symb_root)).mkdir(
-            parents=True, exist_ok=True
-        )
+        symb_root = self.get_symbol_root_folder(symbol)
+        Path(os.path.join(self.folder, symb_root)).mkdir(parents=True, exist_ok=True)
 
     def write_database(self):
         con_data = self._master.to_construct_dict()
@@ -156,8 +154,12 @@ class AmiDataBase(AmiDbFolderLayout):
         """
         self._modified_symbols.append(symbol)
         if symbol not in self._symbol_cache:
-            self._symbol_cache[symbol] = SymbolData(Entries=[data])
-            return
+            symbol_path = self._get_symbol_path(self.folder, symbol)
+            if os.path.isfile(symbol_path):
+                # load existing data so appending does not overwrite
+                self.read_data_for_symbol(symbol)
+            else:
+                self._symbol_cache[symbol] = SymbolData()
 
         self._symbol_cache[symbol].append(data)
 
@@ -172,8 +174,7 @@ class AmiDataBase(AmiDbFolderLayout):
         for symbol in symbol_data:
             assert type(symbol_data[symbol]) == dict
             assert all(
-                el in symbol_data[symbol]
-                for el in SymbolEntry.get_necessary_args()
+                el in symbol_data[symbol] for el in SymbolEntry.get_necessary_args()
             )
             symbol_lengths = [len(symbol_data[symbol][k]) for k in symbol_data[symbol]]
             assert min(symbol_lengths) == max(symbol_lengths)
@@ -184,7 +185,10 @@ class AmiDataBase(AmiDbFolderLayout):
                 for i in range(max(symbol_lengths))
             ]
             if symbol not in self._symbol_cache:
-                self._symbol_cache[symbol] = SymbolData(Entries=data)
-            else:
-                for entry in data:
-                    self._symbol_cache[symbol].append(entry)
+                symbol_path = self._get_symbol_path(self.folder, symbol)
+                if os.path.isfile(symbol_path):
+                    self.read_data_for_symbol(symbol)
+                else:
+                    self._symbol_cache[symbol] = SymbolData()
+            for entry in data:
+                self._symbol_cache[symbol].append(entry)
