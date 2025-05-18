@@ -20,7 +20,6 @@ This module can be used to create a database and write symbol data to that. <br/
 However, it seems to be a good idea to use the official quote downloader program for productive usage.<br/>
 __________________________________________________
 
-
 Important
 ---------
 On Windows there are special file names, e.g. "CON"
@@ -138,8 +137,42 @@ Todos
   This is considered mandatory to reach version 1.0.0  
 * Add docstrings to the source code. This seems to be a minor task.
 
+FAQs
+--------------------
+This section collects frequently asked questions about ami2py.
 
+Codebase Overview
+-----------------
+The **ami2py** library is used to read from and write to AmiBroker databases
+with Python. The README explains that `construct` is used for the binary
+structures and that the project does not represent an official AmiBroker API.
 
+* `ami2py/`
+  * `ami_bitstructs.py` – defines bit structures for individual data entries.
+  * `ami_construct.py` – assembles the complete structures (master file,
+    symbol file).
+  * `ami_dataclasses.py` – dataclasses for symbol and master data.
+  * `ami_database.py` – central `AmiDataBase` class for reading and writing a
+    database; uses `AmiReader`.
+  * `ami_reader.py` – reads existing databases and returns dataclasses or
+    faster "facade" objects.
+  * `ami_symbol_facade.py` – fast access to symbol data without full parsing.
+  * `consts.py` – constants such as `DAY`, `MONTH` etc.
+* `tests/` – contains unit tests and test data.
 
+The README shows an example in which a database is created, a symbol is added
+and data is appended. Afterwards the database can be written to disk and later
+read again.
 
+Key Points
+----------
+1. **Construct structures** – the binary formats of AmiBroker files are defined
+   using `construct`. Anyone working with the project should get familiar with
+   this package.
+2. **Dataclasses** – Python dataclasses exist for symbol data (`SymbolEntry`,
+   `SymbolData`) and the master file (`MasterData`) with validation.
+3. **Fast data access** – `AmiSymbolDataFacade` offers slicing and appending on
+   the binary level to handle large data volumes efficiently.
+4. **Database folder layout** – `AmiDbFolderLayout` specifies in which subfolder
+   symbols are stored (e.g. `a/AAPL`).
 
