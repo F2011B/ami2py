@@ -81,6 +81,16 @@ values from disk:
 >>> db.get_dict_for_symbol("SPCE", force_refresh=True)
 ```
 
+Reading index data
+------------------
+
+Index files in an AmiBroker database use symbol names beginning with ``^``.
+These can be accessed like any other symbol:
+
+```python
+>>> db.get_dict_for_symbol("^GDAXI")
+```
+
 Using a list container facade for fast reading of symbol data. 
 The previous mentioned methods to read symbol data from the database use construct to 
 convert the binary array into a hierarchical object structure. 
