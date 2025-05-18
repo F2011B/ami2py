@@ -25,6 +25,7 @@ def test_AmiDataBase_should_get_dict_for_symbol():
     assert aapl["Month"][0] == 9
     assert aapl["Year"][0] == 2017
 
+
 def test_AmiDataBase_should_get_fastdata_for_symbol():
     test_database_folder = os.path.join(test_data_folder, "./TestData")
     db = AmiDataBase(test_database_folder)
@@ -35,6 +36,7 @@ def test_AmiDataBase_should_get_fastdata_for_symbol():
     assert symbol[0]["Year"] == 2017
     assert len(symbol[0:10]) == 10
 
+
 def test_AmiDataBase_should_get_fastdata_for_symbol_negative_indexed():
     test_database_folder = os.path.join(test_data_folder, "./TestData")
     db = AmiDataBase(test_database_folder)
@@ -43,10 +45,11 @@ def test_AmiDataBase_should_get_fastdata_for_symbol_negative_indexed():
     assert symbol[-1]["Day"] == 19
     assert symbol[-1]["Month"] == 2
     assert symbol[-1]["Year"] == 2020
-    assert round(symbol[-1]["Open"],2) == 34.3
+    assert round(symbol[-1]["Open"], 2) == 34.3
     assert round(symbol[-1]["Close"], 2) == 37.35
     assert round(symbol[-1]["High"], 2) == 37.5
     assert round(symbol[-1]["Low"], 2) == 32
+
 
 def test_AmiDataBase_should_append_symbol_entry():
     test_database_folder = os.path.join(test_data_folder, "./TestData")
@@ -176,6 +179,50 @@ def test_append_symbol_data_twice_increases_entries():
     db.append_symbol_data(second)
     aapl = db.get_dict_for_symbol("AAPL")
     assert len(aapl["Day"]) == 4
+
+
+def test_add_symbol_data_dict_existing_symbol_fast():
+    test_database_folder = os.path.join(test_data_folder, "./TestData")
+    db = AmiDataBase(test_database_folder)
+    original_len = db.get_fast_symbol_data("SPCE").length
+    db.add_symbol_data_dict(
+        {
+            "SPCE": {
+                "Close": [50.0],
+                "High": [51.0],
+                "Low": [49.0],
+                "Open": [50.5],
+                "Volume": [1000.0],
+                "Month": [1],
+                "Year": [2030],
+                "Day": [1],
+            }
+        }
+    )
+    fast = db.get_fast_symbol_data("SPCE")
+    assert fast.length == original_len + 1
+    assert fast[-1]["Day"] == 1
+
+
+def test_add_symbol_data_dict_new_symbol_fast():
+    test_database_folder = os.path.join(test_data_folder, "./TestData")
+    db = AmiDataBase(test_database_folder)
+    db.add_symbol_data_dict(
+        {
+            "AAPL": {
+                "Close": [1.1, 1.2],
+                "High": [1.2, 1.3],
+                "Low": [1.0, 1.1],
+                "Open": [1.05, 1.15],
+                "Volume": [100.0, 200.0],
+                "Month": [2, 2],
+                "Year": [2024, 2024],
+                "Day": [1, 2],
+            }
+        }
+    )
+    fast = db.get_fast_symbol_data("AAPL")
+    assert fast.length == 2
 
 
 def test_AmiDataBase_should_create_new_db():

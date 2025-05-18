@@ -67,7 +67,38 @@ class AmiDataBase(AmiDbFolderLayout):
                 self._fast_symbol_cache[symbol_name] += el
 
     def add_symbol_data_dict(self, input_dict):
-        pass
+        """Append data provided as dictionaries to the fast symbol cache.
+
+        Parameters
+        ----------
+        input_dict : dict
+            Mapping of symbol name to data. The data can either be a list of
+            dictionaries describing the individual rows or a dictionary of
+            column lists (as returned by ``get_symbol_data_dictionary``).
+        """
+
+        assert isinstance(input_dict, dict)
+
+        for symbol, data in input_dict.items():
+            if symbol not in self._fast_symbol_cache:
+                self.read_fast_data_for_symbol(symbol)
+
+            # data may be a list of dictionaries
+            if isinstance(data, list):
+                for entry in data:
+                    self._fast_symbol_cache[symbol] += entry
+                continue
+
+            # or a dictionary with column lists
+            if isinstance(data, dict):
+                if all(isinstance(v, list) for v in data.values()):
+                    if len(data) > 0:
+                        length = len(next(iter(data.values())))
+                        for i in range(length):
+                            entry = {k: v[i] for k, v in data.items()}
+                            self._fast_symbol_cache[symbol] += entry
+                else:
+                    self._fast_symbol_cache[symbol] += data
 
     def store_symbol(self, symbol_name):
         if symbol_name in self._symbol_cache:
@@ -80,10 +111,8 @@ class AmiDataBase(AmiDbFolderLayout):
                 f.close()
 
     def ensure_symbol_folder(self, symbol):
-        symb_root=self.get_symbol_root_folder(symbol)
-        Path(os.path.join(self.folder, symb_root)).mkdir(
-            parents=True, exist_ok=True
-        )
+        symb_root = self.get_symbol_root_folder(symbol)
+        Path(os.path.join(self.folder, symb_root)).mkdir(parents=True, exist_ok=True)
 
     def write_database(self):
         con_data = self._master.to_construct_dict()
@@ -172,8 +201,7 @@ class AmiDataBase(AmiDbFolderLayout):
         for symbol in symbol_data:
             assert type(symbol_data[symbol]) == dict
             assert all(
-                el in symbol_data[symbol]
-                for el in SymbolEntry.get_necessary_args()
+                el in symbol_data[symbol] for el in SymbolEntry.get_necessary_args()
             )
             symbol_lengths = [len(symbol_data[symbol][k]) for k in symbol_data[symbol]]
             assert min(symbol_lengths) == max(symbol_lengths)
