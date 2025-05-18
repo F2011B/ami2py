@@ -59,7 +59,7 @@ Reading a list of symbols contained in the database.
     >>> symbols
     ["AAPL"]
 
-Getting values for a symbol in a pandas compatible dicitonary format.
+Getting values for a symbol in a pandas compatible dictionary format.
 
     >>> db.get_dict_for_symbol("SPCE")
     {
