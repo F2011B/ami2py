@@ -1,0 +1,11 @@
+[package]
+name = "rust_bitparser"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "rust_bitparser"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.21", features = ["extension-module"] }

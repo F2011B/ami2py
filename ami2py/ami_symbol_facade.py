@@ -31,6 +31,7 @@ from .consts import (
 )
 from .ami_bitstructs import EntryChunk
 from .ami_construct import SymbolHeader
+from .bitparser import read_date, reverse_bits
 import struct
 
 entry_map = [
@@ -133,27 +134,6 @@ class AmiSymbolFacade:
 class AmiHeaderFacade:
     def __init__(self):
         pass
-
-
-def reverse_bits(byte_data):
-    return int("{:08b}".format(byte_data)[::-1], 2)
-
-
-def read_date(date_tuple):
-    values = int.from_bytes(bytes(date_tuple), "little")
-    return {
-        YEAR: values >> 52,
-        MONTH: (values >> 48) & 0x0F,
-        DAY: (values >> 43) & 0x1F,
-        HOUR: (values >> 38) & 0x1F,
-        MINUTE: (values >> 32) & 0x3F,
-        SECOND: (values >> 26) & 0x3F,
-        MILLI_SEC: (values >> 16) & 0x3FF,
-        MICRO_SEC: (values >> 6) & 0x3FF,
-        RESERVED: values & 0xE,
-        FUT: values & 0x1,
-    }
-
 
 def read_date_data(entrybin):
     stride = 40
