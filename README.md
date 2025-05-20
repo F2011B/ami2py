@@ -176,3 +176,10 @@ Key Points
 4. **Database folder layout** – `AmiDbFolderLayout` specifies in which subfolder
    symbols are stored (e.g. `a/AAPL`).
 
+
+### Optional Rust Backend
+
+The bit parsing logic can optionally be executed using a Rust implementation. Set
+`AMI2PY_USE_RUST=1` in the environment to activate the Rust backend (requires the
+`rust_bitparser` extension to be built). If the extension is not available, the
+library falls back to the pure Python implementation.
