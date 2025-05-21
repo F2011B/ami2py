@@ -346,78 +346,12 @@ class SymbolConstructFast:
         result["Entries"].append(self.entry_chunk.parse(bin[0x4A0:]))
         entrybin = bin[start:]
         for i in range(numits):
-            result["Entries"].append(
-                [
-                    self.entry_chunk.parse(entrybin[(i * 40) : (i * 40 + 40)]),
-                    self.entry_chunk.parse(entrybin[(2 * i * 40) : (2 * i * 40 + 40)]),
-                    self.entry_chunk.parse(entrybin[(3 * i * 40) : (3 * i * 40 + 40)]),
-                    self.entry_chunk.parse(entrybin[(4 * i * 40) : (4 * i * 40 + 40)]),
-                    self.entry_chunk.parse(entrybin[(5 * i * 40) : (5 * i * 40 + 40)]),
-                    self.entry_chunk.parse(entrybin[(6 * i * 40) : (6 * i * 40 + 40)]),
-                    self.entry_chunk.parse(entrybin[(7 * i * 40) : (7 * i * 40 + 40)]),
-                    self.entry_chunk.parse(entrybin[(8 * i * 40) : (8 * i * 40 + 40)]),
-                    self.entry_chunk.parse(entrybin[(9 * i * 40) : (9 * i * 40 + 40)]),
-                    self.entry_chunk.parse(
-                        entrybin[(10 * i * 40) : (10 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(11 * i * 40) : (11 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(12 * i * 40) : (12 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(13 * i * 40) : (13 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(14 * i * 40) : (14 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(15 * i * 40) : (15 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(16 * i * 40) : (16 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(17 * i * 40) : (17 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(18 * i * 40) : (18 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(19 * i * 40) : (19 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(20 * i * 40) : (20 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(21 * i * 40) : (21 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(22 * i * 40) : (22 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(23 * i * 40) : (23 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(24 * i * 40) : (24 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(25 * i * 40) : (25 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(26 * i * 40) : (26 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(27 * i * 40) : (27 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(28 * i * 40) : (28 * i * 40 + 40)]
-                    ),
-                    self.entry_chunk.parse(
-                        entrybin[(29 * i * 40) : (29 * i * 40 + 40)]
-                    ),
-                ]
-            )
+            entries = []
+            for offset_index in range(30):
+                start_index = offset_index * i * 40
+                entries.append(
+                    self.entry_chunk.parse(entrybin[start_index : start_index + 40])
+                )
+            result["Entries"].append(entries)
 
         return result
