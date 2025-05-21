@@ -1,3 +1,5 @@
+#![allow(unsafe_op_in_unsafe_fn)]
+
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 
@@ -15,7 +17,7 @@ fn read_date(date_tuple: Vec<u8>) -> PyResult<PyObject> {
     bytes.copy_from_slice(&date_tuple[..8]);
     let value = u64::from_le_bytes(bytes);
     Python::with_gil(|py| {
-        let dict = PyDict::new(py);
+        let dict = PyDict::new_bound(py);
         dict.set_item("Year", value >> 52)?;
         dict.set_item("Month", (value >> 48) & 0x0Fu64)?;
         dict.set_item("Day", (value >> 43) & 0x1Fu64)?;
@@ -31,7 +33,7 @@ fn read_date(date_tuple: Vec<u8>) -> PyResult<PyObject> {
 }
 
 #[pymodule]
-fn rust_bitparser(_py: Python, m: &PyModule) -> PyResult<()> {
+fn rust_bitparser(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(reverse_bits, m)?)?;
     m.add_function(wrap_pyfunction!(read_date, m)?)?;
     Ok(())
