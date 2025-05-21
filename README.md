@@ -183,3 +183,12 @@ The bit parsing logic can optionally be executed using a Rust implementation. Se
 `AMI2PY_USE_RUST=1` in the environment to activate the Rust backend (requires the
 `rust_bitparser` extension to be built). If the extension is not available, the
 library falls back to the pure Python implementation.
+
+The included `run_tests.sh` script automatically compiles the Rust extension in offline mode before running the tests. If you want to build it manually, execute:
+
+```bash
+cargo build --manifest-path rust_bitparser/Cargo.toml --release --offline
+cp rust_bitparser/target/release/librust_bitparser.so ami2py/rust_bitparser.so
+```
+
+This will make the Rust backend available when `AMI2PY_USE_RUST=1` is set.
