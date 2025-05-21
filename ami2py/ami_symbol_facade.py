@@ -276,48 +276,38 @@ class AmiSymbolDataFacade:
 
     def __iadd__(self, other):
         # assert all (k in entry_map for k in other)
-        minute, hour, second, micro_second, milli_second = 0, 0, 0, 0, 0
-        if MINUTE in other:
-            minute = other[MINUTE]
-        if HOUR in other:
-            hour = other[HOUR]
-        if SECOND in other:
-            second = other[SECOND]
-        if MICRO_SEC in other:
-            micro_second = other[MICRO_SEC]
-        if MILLI_SEC in other:
-            milli_second = other[MILLI_SEC]
+        minute = other.get(MINUTE, 0)
+        hour = other.get(HOUR, 0)
+        second = other.get(SECOND, 0)
+        micro_second = other.get(MICRO_SEC, 0)
+        milli_second = other.get(MILLI_SEC, 0)
+        reserved = other.get(RESERVED, 0)
+        fut = other.get(FUT, 0)
 
-        append_bin = date_to_bin(
-            other[DAY],
-            other[MONTH],
-            other[YEAR],
-            hour,
-            minute,
-            second,
-            micro_second,
-            milli_second,
+        append_bin = bytearray(OVERALL_ENTRY_BYTES)
+
+        date_value = (
+            ((other[YEAR] & 0xFFF) << 52)
+            | ((other[MONTH] & 0xF) << 48)
+            | ((other[DAY] & 0x1F) << 43)
+            | ((hour & 0x1F) << 38)
+            | ((minute & 0x3F) << 32)
+            | ((second & 0x3F) << 26)
+            | ((milli_second & 0x3FF) << 16)
+            | ((micro_second & 0x3FF) << 6)
+            | ((reserved & 0x7) << 1)
+            | (fut & 0x1)
         )
-        append_bin += float_to_bin(other[CLOSE])
-        append_bin += float_to_bin(other[OPEN])
-        append_bin += float_to_bin(other[HIGH])
-        append_bin += float_to_bin(other[LOW])
-        if VOLUME in other:
-            append_bin += float_to_bin(other[VOLUME])
-        else:
-            append_bin += float_to_bin(0)
-        if AUX_1 in other:
-            append_bin += float_to_bin(other[AUX_1])
-        else:
-            append_bin += float_to_bin(0)
-        if AUX_2 in other:
-            append_bin += float_to_bin(other[AUX_2])
-        else:
-            append_bin += float_to_bin(0)
-        if TERMINATOR in other:
-            append_bin += float_to_bin(other[TERMINATOR])
-        else:
-            append_bin += float_to_bin(0)
+        struct.pack_into("<Q", append_bin, 0, date_value)
+
+        struct.pack_into("<f", append_bin, 8, other[CLOSE])
+        struct.pack_into("<f", append_bin, 12, other[OPEN])
+        struct.pack_into("<f", append_bin, 16, other[HIGH])
+        struct.pack_into("<f", append_bin, 20, other[LOW])
+        struct.pack_into("<f", append_bin, 24, other.get(VOLUME, 0))
+        struct.pack_into("<f", append_bin, 28, other.get(AUX_1, 0))
+        struct.pack_into("<f", append_bin, 32, other.get(AUX_2, 0))
+        struct.pack_into("<f", append_bin, 36, other.get(TERMINATOR, 0))
         self.binentries[
             -TERMINATOR_DOUBLE_WORD_LENGTH:-TERMINATOR_DOUBLE_WORD_LENGTH
         ] = append_bin
