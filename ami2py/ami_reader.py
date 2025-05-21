@@ -5,6 +5,7 @@ from .ami_symbol_facade import AmiSymbolDataFacade
 # from .ami_symbol import compiled as SymbolConstruct
 from .consts import YEAR, DAY, MONTH, CLOSE, OPEN, HIGH, LOW, VOLUME, DATEPACKED
 import os
+import mmap
 from .ami_database_folder_layout import AmiDbFolderLayout
 
 ERROR_RETURNED = True
@@ -38,6 +39,8 @@ class AmiReader(AmiDbFolderLayout):
             return MasterData()
 
         parsed = Master.parse(binarry)
+        if hasattr(binarry, "close"):
+            binarry.close()
         return MasterData().set_by_construct(parsed)
 
     def __read_symbols(self):
@@ -52,7 +55,11 @@ class AmiReader(AmiDbFolderLayout):
         filename=self._get_symbol_path(self.__folder, symbol_name)
         if not os.path.isfile(filename):
             return [], ERROR_RETURNED, f"{filename} is not a file"
-        binarry = open(filename, "rb").read()
+        f = open(filename, "rb")
+        try:
+            binarry = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
+        finally:
+            f.close()
         return binarry, False, ""
 
     def get_symbols(self):
@@ -64,13 +71,18 @@ class AmiReader(AmiDbFolderLayout):
         )
         if errorstate:
             return AmiSymbolDataFacade()
-        return AmiSymbolDataFacade(binarry)
+        facade = AmiSymbolDataFacade(binarry)
+        if hasattr(binarry, "close"):
+            binarry.close()
+        return facade
 
     def get_symbol_data_raw(self, symbol_name):
         binarry, errorstate, errmsg = self.__get_binarry(symbol_name)
         if errorstate:
             return []
         data = self.__symbol.parse(binarry)
+        if hasattr(binarry, "close"):
+            binarry.close()
         return data
 
     def get_symbol_data_dictionary(self, symbol_name):
@@ -108,6 +120,8 @@ class AmiReader(AmiDbFolderLayout):
             return SymbolData()
 
         data = self.__symbol.parse(binarry)
+        if hasattr(binarry, "close"):
+            binarry.close()
         values = [
             SymbolEntry(
                 Open=el[OPEN],
