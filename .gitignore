@@ -7,3 +7,4 @@ rust_bitparser/target/
 rust_bitparser/Cargo.lock
 rust_bitparser/vendor/
 tests/NewData/
+ami2py/rust_bitparser.so
