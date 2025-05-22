@@ -56,11 +56,8 @@ def pytest_configure():
 @pytest.fixture
 def master_data():
     test_data_file = os.path.join(test_data_folder, "./TestData/broker.master")
-    try:
-        f = open(test_data_file, "rb")
+    with open(test_data_file, "rb") as f:
         binfile = f.read()
-    finally:
-        f.close()
     return binfile
 
 @pytest.fixture
@@ -71,11 +68,8 @@ def index_db():
 @pytest.fixture
 def symbol_spce():
     test_data_file = os.path.join(test_data_folder, "./TestData/s/SPCE")
-    try:
-        f = open(test_data_file, "rb")
+    with open(test_data_file, "rb") as f:
         binfile = f.read()
-    finally:
-        f.close()
     return binfile
 
 
