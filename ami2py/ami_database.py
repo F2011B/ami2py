@@ -104,11 +104,8 @@ class AmiDataBase(AmiDbFolderLayout):
         if symbol_name in self._symbol_cache:
             data = self._symbol_cache[symbol_name].to_construct_dict()
             newbin = SymbolConstruct.build(data)
-            f = open(os.path.join(self.folder, symbol_name), "wb")
-            try:
+            with open(os.path.join(self.folder, symbol_name), "wb") as f:
                 f.write(newbin)
-            finally:
-                f.close()
 
     def ensure_symbol_folder(self, symbol):
         symb_root = self.get_symbol_root_folder(symbol)
@@ -117,30 +114,21 @@ class AmiDataBase(AmiDbFolderLayout):
     def write_database(self):
         con_data = self._master.to_construct_dict()
         newbin = Master.build(con_data)
-        f = open(self._master_path, "wb")
-        try:
+        with open(self._master_path, "wb") as f:
             f.write(newbin)
-        finally:
-            f.close()
         for symbol in self._fast_symbol_cache:
             newbin = self._fast_symbol_cache[symbol].binary
             self.ensure_symbol_folder(symbol)
-            f = open(self._get_symbol_path(self.folder, symbol), "wb")
-            try:
+            with open(self._get_symbol_path(self.folder, symbol), "wb") as f:
                 f.write(newbin)
-            finally:
-                f.close()
 
         for symbol in self._symbol_cache:
             newbin = SymbolConstruct.build(
                 self._symbol_cache[symbol].to_construct_dict()
             )
             self.ensure_symbol_folder(symbol)
-            f = open(self._get_symbol_path(self.folder, symbol), "wb")
-            try:
+            with open(self._get_symbol_path(self.folder, symbol), "wb") as f:
                 f.write(newbin)
-            finally:
-                f.close()
 
     def read_data_for_symbol(self, symbol_name):
         self._symbol_cache[symbol_name] = self.reader.get_symbol_data(symbol_name)

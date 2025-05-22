@@ -55,11 +55,8 @@ class AmiReader(AmiDbFolderLayout):
         filename=self._get_symbol_path(self.__folder, symbol_name)
         if not os.path.isfile(filename):
             return [], ERROR_RETURNED, f"{filename} is not a file"
-        f = open(filename, "rb")
-        try:
+        with open(filename, "rb") as f:
             binarry = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
-        finally:
-            f.close()
         return binarry, False, ""
 
     def get_symbols(self):
