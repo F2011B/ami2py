@@ -21,4 +21,13 @@ if [ -f rust_amidatabase/Cargo.toml ]; then
     cp rust_amidatabase/target/release/librust_amidatabase.so ami2py/rust_amidatabase.so
 fi
 
+# rust_amireader if available
+if [ -f rust_amireader/Cargo.toml ]; then
+    CARGO_FLAGS="--manifest-path rust_amireader/Cargo.toml $COMMON_FLAGS"
+    if [ ! -f rust_amireader/target/release/librust_amireader.so ]; then
+        cargo build $CARGO_FLAGS
+    fi
+    cp rust_amireader/target/release/librust_amireader.so ami2py/rust_amireader.so
+fi
+
 pytest "$@"
