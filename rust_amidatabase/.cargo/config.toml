@@ -1,4 +1,3 @@
-
 [net]
 offline = true
 
@@ -6,4 +5,4 @@ offline = true
 replace-with = "vendored-sources"
 
 [source.vendored-sources]
-directory = "vendor"
+directory = "../rust_bitparser/vendor"
