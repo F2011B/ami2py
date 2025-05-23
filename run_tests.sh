@@ -2,8 +2,15 @@
 set -e
 
 
-# Build the Rust extensions in offline mode
-COMMON_FLAGS="--release --offline"
+# Build the Rust extensions
+if [ -n "${CIRCLECI:-}" ]; then
+    # CircleCI has network access, disable any offline config
+    export CARGO_NET_OFFLINE=false
+    COMMON_FLAGS="--release"
+else
+    # Default to offline mode for local environments
+    COMMON_FLAGS="--release --offline"
+fi
 
 # rust_bitparser
 CARGO_FLAGS="--manifest-path rust_bitparser/Cargo.toml $COMMON_FLAGS"

@@ -184,7 +184,7 @@ The bit parsing logic can optionally be executed using a Rust implementation. Se
 `rust_bitparser` extension to be built). If the extension is not available, the
 library falls back to the pure Python implementation.
 
-The included `run_tests.sh` script automatically compiles the Rust extension in offline mode before running the tests. If you want to build it manually, execute:
+The included `run_tests.sh` script automatically compiles the Rust extension before running the tests. It uses an offline build by default but switches to an online build when the `CIRCLECI` environment variable is present. In this case the script also sets `CARGO_NET_OFFLINE=false` to override any offline Cargo configuration. If you want to build it manually, execute:
 
 ```bash
 cargo build --manifest-path rust_bitparser/Cargo.toml --release --offline
