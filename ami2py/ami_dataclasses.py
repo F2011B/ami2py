@@ -117,7 +117,6 @@ class SymbolEntry:
             TERMINATOR: self.Terminator,
         }
 
-        pass
 
 
 @dataclass_validate()

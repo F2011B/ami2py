@@ -32,6 +32,7 @@ from .consts import (
 from .ami_bitstructs import EntryChunk
 from .ami_construct import SymbolHeader
 from .bitparser import read_date, reverse_bits
+from .errors import InvalidAmiHeaderError
 import struct
 
 entry_map = [
@@ -77,7 +78,6 @@ SymbolConstruct = Struct(
 class AmiSymbolFacade:
     def __init__(self, binary):
         self.data = binary
-        pass
 
     def __setitem__(self, key, item):
         self.__dict__[key] = item
@@ -133,7 +133,7 @@ class AmiSymbolFacade:
 
 class AmiHeaderFacade:
     def __init__(self):
-        pass
+        ...
 
 def read_date_data(entrybin):
     stride = 40
@@ -182,7 +182,7 @@ def date_to_bin(day, month, year, hour=0, minute=0, second=0, mic_sec=0, milli_s
     # + ((reverse_bits(date_tuple[0]) & 0xC0) >> 6),
     # RESERVED: ((reverse_bits(date_tuple[0]) & 0x1E) >> 1),
     # FUT: (reverse_bits(date_tuple[0]) & 0x1),
-    pass
+    ...
 
 
 class AmiSymbolDataFacade:
@@ -203,12 +203,7 @@ class AmiSymbolDataFacade:
 
         enough_bytes = len(binary) >= (NUM_HEADER_BYTES + TERMINATOR_DOUBLE_WORD_LENGTH)
         if not enough_bytes:
-            self._empty = True
-            self.length = 0
-            self.set_length_in_header()
-            self.binary = self.default_header + bytearray(TERMINATOR_DOUBLE_WORD_LENGTH)
-            self.binentries = self.binary[NUM_HEADER_BYTES:]
-            return
+            raise InvalidAmiHeaderError("Symbol file is too short")
         self.binary = bytearray(self.binary)
         self.header = SymbolHeader.parse(self.binary)
         self.default_header = SymbolHeader.build(self.header)

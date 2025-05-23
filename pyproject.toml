@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ami2py"
+version = "0.9.0"
+description = "Python Package for reading a amibroker database"
+authors = [{name = "Dark Ligt alias FB2011B"}]
+license = {file = "LICENSE"}
+readme = "README.md"
+requires-python = ">=3.6"
+dependencies = [
+    "construct==2.10.67",
+    "dataclass-type-validator",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
