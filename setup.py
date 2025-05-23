@@ -28,6 +28,7 @@ setup(
     packages=find_packages("."),
     package_dir={"": "."},
     include_package_data=True,
+    package_data={"ami2py": ["py.typed"]},
     python_requires=">= 3.6",
     license="MIT",
     # install_requires=["setuptools", "pip", "docutils", "purepng>=0.1.1"],
