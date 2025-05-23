@@ -1,0 +1,14 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.11
+    steps:
+      - checkout
+      - run: pip install -r requirements.txt
+      - run: pip install .
+      - run: ./run_tests.sh
+workflows:
+  build_and_test:
+    jobs:
+      - build
