@@ -29,7 +29,7 @@ SYMBOL_SPACE = b"\0" * (495 - 5 - 3)
 SYMBOL_STR = b"\0" * (497)
 
 
-@dataclass()
+@dataclass(slots=True)
 class SymbolEntry:
     Month: int = 0
     Year: int = 0
@@ -120,7 +120,7 @@ class SymbolEntry:
 
 
 @dataclass_validate()
-@dataclass()
+@dataclass(slots=True)
 class SymbolData:
     Header: bytes = b"\0" * 0x4A0
     Entries: List[SymbolEntry] = field(default_factory=list)
