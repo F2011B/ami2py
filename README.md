@@ -129,6 +129,15 @@ it is necessary.
       'Month': 10,
        ......
      }
+Updating a database from Yahoo
+------------------------------
+
+A helper script ``scripts/update_yahoo_db.py`` can download new daily data from Yahoo Finance for all symbols already present in a database. The script reads the last stored date for each symbol and only fetches the missing days before appending them to the database.
+
+```bash
+python scripts/update_yahoo_db.py /path/to/db
+```
+
 
 Todos
 --------------------
