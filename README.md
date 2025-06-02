@@ -20,6 +20,12 @@ This module can be used to create a database and write symbol data to that. <br/
 However, it seems to be a good idea to use the official quote downloader program for productive usage.<br/>
 __________________________________________________
 
+Unofficial Resource
+-------------------
+A community-written overview is available at
+[deepwiki.com/F2011B/ami2py](https://deepwiki.com/F2011B/ami2py). This
+guide is unofficial and may become outdated.
+
 Important
 ---------
 On Windows there are special file names, e.g. "CON"
