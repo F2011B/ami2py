@@ -160,13 +160,33 @@ def float_to_bin(data):
     return bytearray(struct.pack("<f", data))
 
 
-def date_to_bin(day, month, year, hour=0, minute=0, second=0, mic_sec=0, milli_sec=0):
-    result = bytearray(8)
-    result[7] = year >> 4
-    result[6] = (result[6] & 0x0F) + (year << 4) & 0xF0
-    result[6] = (result[6] & 0xF0) + month
-    result[5] = (day << 3) + result[5] & 0xF8
-    return result
+def date_to_bin(
+    day: int,
+    month: int,
+    year: int,
+    hour: int = 0,
+    minute: int = 0,
+    second: int = 0,
+    mic_sec: int = 0,
+    milli_sec: int = 0,
+) -> bytearray:
+    """Convert date and time information into AmiBroker binary format."""
+
+    values = (
+        (year << 52)
+        | (month << 48)
+        | (day << 43)
+        | (hour << 38)
+        | (minute << 32)
+        | (second << 26)
+        | (milli_sec << 16)
+        | (mic_sec << 6)
+        | 0
+        | 0
+    )
+
+    byte_values = values.to_bytes(8, "little")
+    return bytearray(byte_values)
     # Currently reading intraday data is very difficult
     # YEAR: (date_tuple[7] << 4) + ((date_tuple[6] & 0xF0) >> 4),
     # MONTH: date_tuple[6] & 0x0F,

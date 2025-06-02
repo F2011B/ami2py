@@ -61,12 +61,17 @@ fn date_to_bin(
     mic_sec: u16,
     milli_sec: u16,
 ) -> PyResult<PyObject> {
-    let mut result = [0u8; 8];
-    result[7] = (year >> 4) as u8;
-    result[6] = (result[6] & 0x0F) + (((year << 4) as u8) & 0xF0);
-    result[6] = (result[6] & 0xF0) + (month & 0x0F);
-    result[5] = ((day << 3) as u8) + (result[5] & 0xF8);
-    Ok(PyByteArray::new_bound(py, &result).to_object(py))
+    let values: u64 = ((year as u64) << 52)
+        | ((month as u64) << 48)
+        | ((day as u64) << 43)
+        | ((hour as u64) << 38)
+        | ((minute as u64) << 32)
+        | ((second as u64) << 26)
+        | ((milli_sec as u64) << 16)
+        | ((mic_sec as u64) << 6);
+
+    let byte_values = values.to_le_bytes();
+    Ok(PyByteArray::new_bound(py, &byte_values).to_object(py))
 }
 
 #[pymodule]
