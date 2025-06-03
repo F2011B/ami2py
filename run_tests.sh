@@ -64,4 +64,4 @@ if [ -f rust_amireader/Cargo.toml ]; then
     cp "$RUST_LIB" "$DEST_LIB"
 fi
 
-pytest "$@"
+python -m pytest "$@"
