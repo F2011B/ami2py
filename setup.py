@@ -65,5 +65,5 @@ setup(
         'dataclass-type-validator'
     ],
     # Install the compiled CLI alongside the Python package
-    scripts=[AMI_CLI_BIN]
+    # scripts=[AMI_CLI_BIN]
 )
