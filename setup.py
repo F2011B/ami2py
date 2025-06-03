@@ -12,6 +12,13 @@ from setuptools import setup, find_packages
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
+# Determine the path to the compiled CLI binary. This can be overridden via
+# the AMI_CLI_BIN environment variable during the build process.
+AMI_CLI_BIN = os.environ.get("AMI_CLI_BIN")
+if not AMI_CLI_BIN:
+    exe_name = "ami_cli.exe" if os.name == "nt" else "ami_cli"
+    AMI_CLI_BIN = os.path.join("ami_cli", "target", "release", exe_name)
+
 
 if sys.version_info < (3, 6):
     print("ami2py requires python 3.6 because sorted dictionaries are mandatory")
@@ -56,5 +63,7 @@ setup(
     install_requires=[
         'construct==2.10.67',
         'dataclass-type-validator'
-    ]
+    ],
+    # Install the compiled CLI alongside the Python package
+    scripts=[AMI_CLI_BIN]
 )
