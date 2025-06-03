@@ -55,9 +55,13 @@ case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*|Windows_NT)
         if [ ! -x "$PYDIR/python.exe" ]; then
             mkdir -p "$PYDIR"
-            ZIPNAME="python-$PYVER-embed-amd64.zip"
-            fetch "https://www.python.org/ftp/python/$PYVER/$ZIPNAME" "$BOOT_DIR/python.zip"
-            unzip -q "$BOOT_DIR/python.zip" -d "$PYDIR"
+            echo "Fetching Python interpreter from F2011B/python311" >&2
+            if command -v git >/dev/null 2>&1; then
+                git clone --depth 1 https://github.com/F2011B/python311 "$PYDIR"
+            else
+                echo "git not found, cannot bootstrap python" >&2
+                exit 1
+            fi
         fi
         PY="$PYDIR/python.exe"
         export PATH="$PYDIR:$PATH"
