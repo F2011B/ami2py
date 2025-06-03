@@ -144,6 +144,21 @@ A helper script ``scripts/update_yahoo_db.py`` can download new daily data from 
 python scripts/update_yahoo_db.py /path/to/db
 ```
 
+Command Line Interface
+----------------------
+
+The `ami_cli` directory contains a small command line tool written in Rust
+that wraps the Python API via PyO3. Build it using
+`cargo build --manifest-path ami_cli/Cargo.toml --release` and use it like:
+
+```bash
+ami_cli <command> [args]
+  create <db_path> <symbol1> [symbol2 ...]
+  add-symbol <db_path> <symbol1> [symbol2 ...]
+  list-symbols <db_path>
+  list-quotes <db_path> <symbol> [start YYYY-MM-DD end YYYY-MM-DD]
+  add-quotes <db_path> <symbol> <csv_file>
+```
 
 Todos
 --------------------
