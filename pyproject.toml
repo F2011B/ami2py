@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ami2py"
-version = "0.9.0"
+version = "0.10.0"
 description = "Python Package for reading a amibroker database"
 authors = [{name = "Dark Ligt alias FB2011B"}]
 license = {file = "LICENSE"}
