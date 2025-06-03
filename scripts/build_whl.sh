@@ -126,7 +126,7 @@ else
 fi
 echo "Virtual environment activated" >&2
 echo "Installing Python build dependencies" >&2
-pip install --upgrade pip build wheel >/dev/null
+$VENV_DIR/Scripts/python.exe  -m pip install --upgrade pip build wheel >/dev/null
 
 # ----------------------------------------------------------------------
 # Ensure Rust
