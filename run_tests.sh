@@ -3,12 +3,12 @@ set -e
 
 
 # Build the Rust extensions
-if [ -n "${CIRCLECI:-}" ]; then
-    # CircleCI has network access, disable any offline config
+if [ -n "${CIRCLECI:-}" ] || [ -n "${GITHUB_ACTIONS:-}" ]; then
+    # CI environments have network access, disable any offline config
     export CARGO_NET_OFFLINE=false
     COMMON_FLAGS="--release"
 else
-    # Default to offline mode for local environments
+    # Default to offline mode for local environments to support Codex
     COMMON_FLAGS="--release --offline"
 fi
 
