@@ -64,6 +64,6 @@ setup(
         'construct==2.10.67',
         'dataclass-type-validator'
     ],
-    # Install the compiled CLI alongside the Python package
-    # scripts=[AMI_CLI_BIN]
+    # Install the compiled CLI alongside the Python package if it was built
+    scripts=[AMI_CLI_BIN] if os.path.exists(AMI_CLI_BIN) else [],
 )
