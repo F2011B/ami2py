@@ -35,8 +35,15 @@ else
 fi
 
 # Create and activate virtual environment
-"$PY" -m venv "$BOOT_DIR/venv"
-source "$BOOT_DIR/venv/bin/activate"
+VENV_DIR="$BOOT_DIR/venv"
+"$PY" -m venv "$VENV_DIR"
+if [ -f "$VENV_DIR/Scripts/activate" ]; then
+    # Windows virtualenv layout
+    source "$VENV_DIR/Scripts/activate"
+else
+    # POSIX virtualenv layout
+    source "$VENV_DIR/bin/activate"
+fi
 pip install --upgrade pip build wheel >/dev/null
 
 # ----------------------------------------------------------------------
