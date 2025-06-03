@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
+# Fail fast and show progress
 set -euo pipefail
 echo "Starting wheel build" >&2
+
+# Optional argument to force a clean bootstrap
+CLEAN_BOOTSTRAP=0
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -c|--clean)
+            CLEAN_BOOTSTRAP=1
+            ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            exit 1
+            ;;
+    esac
+    shift
+done
 # Provide more detailed output for troubleshooting
 
 # Determine repository root
@@ -10,6 +26,14 @@ BOOT_DIR="$ROOT_DIR/.bootstrap"
 echo "Root directory: $ROOT_DIR" >&2
 echo "Bootstrap directory: $BOOT_DIR" >&2
 mkdir -p "$BOOT_DIR"
+
+PYDIR="$BOOT_DIR/python"
+VENV_DIR="$BOOT_DIR/venv"
+
+if [ "$CLEAN_BOOTSTRAP" -eq 1 ]; then
+    echo "Performing clean bootstrap" >&2
+    rm -rf "$PYDIR" "$VENV_DIR"
+fi
 
 # Helper to download a file if it does not already exist
 fetch() {
@@ -26,19 +50,35 @@ fetch() {
 
 echo "Bootstrapping Python" >&2
 PYVER="3.11.6"
-PYDIR="$BOOT_DIR/python"
-mkdir -p "$PYDIR"
-fetch "https://www.python.org/ftp/python/$PYVER/Python-$PYVER.tgz" "$BOOT_DIR/python.tgz"
-tar -xzf "$BOOT_DIR/python.tgz" -C "$PYDIR" --strip-components=1
-pushd "$PYDIR" >/dev/null
-echo "Configuring Python $PYVER" >&2
-./configure --prefix="$PYDIR/install" >/dev/null
-echo "Compiling Python" >&2
-make -j"$(nproc)" >/dev/null
-make install >/dev/null
-popd >/dev/null
-PY="$PYDIR/install/bin/python3"
-export PATH="$PYDIR/install/bin:$PATH"
+
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*|Windows_NT)
+        if [ ! -x "$PYDIR/python.exe" ]; then
+            mkdir -p "$PYDIR"
+            ZIPNAME="python-$PYVER-embed-amd64.zip"
+            fetch "https://www.python.org/ftp/python/$PYVER/$ZIPNAME" "$BOOT_DIR/python.zip"
+            unzip -q "$BOOT_DIR/python.zip" -d "$PYDIR"
+        fi
+        PY="$PYDIR/python.exe"
+        export PATH="$PYDIR:$PATH"
+        ;;
+    *)
+        if [ ! -x "$PYDIR/install/bin/python3" ]; then
+            mkdir -p "$PYDIR"
+            fetch "https://www.python.org/ftp/python/$PYVER/Python-$PYVER.tgz" "$BOOT_DIR/python.tgz"
+            tar -xzf "$BOOT_DIR/python.tgz" -C "$PYDIR" --strip-components=1
+            pushd "$PYDIR" >/dev/null
+            echo "Configuring Python $PYVER" >&2
+            ./configure --prefix="$PYDIR/install" >/dev/null
+            echo "Compiling Python" >&2
+            make -j"$(nproc)" >/dev/null
+            make install >/dev/null
+            popd >/dev/null
+        fi
+        PY="$PYDIR/install/bin/python3"
+        export PATH="$PYDIR/install/bin:$PATH"
+        ;;
+esac
 
 
 echo "Using Python at $PY" >&2
@@ -59,7 +99,6 @@ else
 fi
 
 # Create and activate virtual environment
-VENV_DIR="$BOOT_DIR/venv"
 echo "Creating virtual environment in $VENV_DIR" >&2
 "$PY" -m venv "$VENV_DIR"
 echo "Created ${VENV_DIR}"
