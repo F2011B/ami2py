@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 echo "Starting wheel build" >&2
+# Provide more detailed output for troubleshooting
 
 # Determine repository root
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -20,24 +21,31 @@ fetch() {
 
 # ----------------------------------------------------------------------
 # Ensure Python
+echo "Checking for Python interpreter" >&2
 if command -v python3 >/dev/null 2>&1; then
     PY=$(command -v python3)
+    echo "Found python3 at $PY" >&2
 elif command -v python >/dev/null 2>&1; then
     PY=$(command -v python)
+    echo "Found python at $PY" >&2
 else
+    echo "No system Python found, bootstrapping" >&2
     PYVER="3.11.6"
     PYDIR="$BOOT_DIR/python"
     mkdir -p "$PYDIR"
     fetch "https://www.python.org/ftp/python/$PYVER/Python-$PYVER.tgz" "$BOOT_DIR/python.tgz"
     tar -xzf "$BOOT_DIR/python.tgz" -C "$PYDIR" --strip-components=1
     pushd "$PYDIR" >/dev/null
+    echo "Configuring Python $PYVER" >&2
     ./configure --prefix="$PYDIR/install" >/dev/null
+    echo "Compiling Python" >&2
     make -j"$(nproc)" >/dev/null
     make install >/dev/null
     popd >/dev/null
     PY="$PYDIR/install/bin/python3"
     export PATH="$PYDIR/install/bin:$PATH"
 fi
+
 echo "Using Python at $PY" >&2
 
 # On Windows, command -v may return a path without the required extension.
@@ -48,6 +56,11 @@ if [ ! -f "$PY" ]; then
     elif [ -f "${PY}.bat" ]; then
         PY="${PY}.bat"
     fi
+fi
+if [ ! -x "$PY" ]; then
+    echo "Warning: Python executable not found at $PY" >&2
+else
+    echo "Using Python executable $(command -v "$PY" || echo "$PY")" >&2
 fi
 
 # Create and activate virtual environment
@@ -63,10 +76,13 @@ else
     echo "Activating POSIX virtualenv" >&2
     source "$VENV_DIR/bin/activate"
 fi
+echo "Virtual environment activated" >&2
+echo "Installing Python build dependencies" >&2
 pip install --upgrade pip build wheel >/dev/null
 
 # ----------------------------------------------------------------------
 # Ensure Rust
+echo "Checking for Rust toolchain" >&2
 if ! command -v cargo >/dev/null 2>&1; then
     echo "Rust not found, bootstrapping locally" >&2
     RVER="1.75.0"
@@ -110,6 +126,7 @@ for CRATE in rust_bitparser rust_amidatabase rust_amireader; do
         cargo build --manifest-path "$ROOT_DIR/$CRATE/Cargo.toml" $COMMON_FLAGS
         SRC_LIB="$ROOT_DIR/$CRATE/target/release/${LIB_PREFIX}${CRATE}${LIB_SUFFIX}"
         DEST_LIB="$ROOT_DIR/ami2py/${CRATE}${DEST_EXT}"
+        echo "Copying $SRC_LIB to $DEST_LIB" >&2
         if [ -f "$SRC_LIB" ]; then
             cp "$SRC_LIB" "$DEST_LIB"
         else
@@ -127,6 +144,7 @@ if [ ! -f "$CLI_BIN" ]; then
     echo "CLI binary not found: $CLI_BIN" >&2
     exit 1
 fi
+echo "Built CLI binary at $CLI_BIN" >&2
 
 # Build wheel
 export AMI_CLI_BIN="$CLI_BIN"
