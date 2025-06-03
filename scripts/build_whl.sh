@@ -19,6 +19,8 @@ fetch() {
 # Ensure Python
 if command -v python3 >/dev/null 2>&1; then
     PY=$(command -v python3)
+elif command -v python >/dev/null 2>&1; then
+    PY=$(command -v python)
 else
     PYVER="3.11.6"
     PYDIR="$BOOT_DIR/python"
