@@ -67,6 +67,15 @@ fi
 VENV_DIR="$BOOT_DIR/venv"
 echo "Creating virtual environment in $VENV_DIR" >&2
 "$PY" -m venv "$VENV_DIR"
+# Some python installations (e.g. those created with `pyvenv`) do not
+# include the usual activation scripts.  If they are missing, retry
+# using `virtualenv` which always provides them.
+if [ ! -f "$VENV_DIR/bin/activate" ] && [ ! -f "$VENV_DIR/Scripts/activate" ]; then
+    echo "Virtualenv missing activate script, recreating using virtualenv" >&2
+    "$PY" -m pip install --upgrade virtualenv >/dev/null
+    rm -rf "$VENV_DIR"
+    "$PY" -m virtualenv "$VENV_DIR" >/dev/null
+fi
 if [ -f "$VENV_DIR/Scripts/activate" ]; then
     # Windows virtualenv layout
     echo "Activating Windows virtualenv" >&2
