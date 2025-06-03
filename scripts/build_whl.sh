@@ -40,6 +40,16 @@ else
 fi
 echo "Using Python at $PY" >&2
 
+# On Windows, command -v may return a path without the required extension.
+# Add '.exe' or '.bat' if those files exist so the executable can be invoked
+if [ ! -f "$PY" ]; then
+    if [ -f "${PY}.exe" ]; then
+        PY="${PY}.exe"
+    elif [ -f "${PY}.bat" ]; then
+        PY="${PY}.bat"
+    fi
+fi
+
 # Create and activate virtual environment
 VENV_DIR="$BOOT_DIR/venv"
 echo "Creating virtual environment in $VENV_DIR" >&2
