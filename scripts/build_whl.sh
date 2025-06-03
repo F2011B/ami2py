@@ -5,6 +5,7 @@ echo "Starting wheel build" >&2
 
 # Determine repository root
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+echo $ROOT_DIR
 BOOT_DIR="$ROOT_DIR/.bootstrap"
 echo "Root directory: $ROOT_DIR" >&2
 echo "Bootstrap directory: $BOOT_DIR" >&2
@@ -21,30 +22,24 @@ fetch() {
 
 # ----------------------------------------------------------------------
 # Ensure Python
-echo "Checking for Python interpreter" >&2
-if command -v python3 >/dev/null 2>&1; then
-    PY=$(command -v python3)
-    echo "Found python3 at $PY" >&2
-elif command -v python >/dev/null 2>&1; then
-    PY=$(command -v python)
-    echo "Found python at $PY" >&2
-else
-    echo "No system Python found, bootstrapping" >&2
-    PYVER="3.11.6"
-    PYDIR="$BOOT_DIR/python"
-    mkdir -p "$PYDIR"
-    fetch "https://www.python.org/ftp/python/$PYVER/Python-$PYVER.tgz" "$BOOT_DIR/python.tgz"
-    tar -xzf "$BOOT_DIR/python.tgz" -C "$PYDIR" --strip-components=1
-    pushd "$PYDIR" >/dev/null
-    echo "Configuring Python $PYVER" >&2
-    ./configure --prefix="$PYDIR/install" >/dev/null
-    echo "Compiling Python" >&2
-    make -j"$(nproc)" >/dev/null
-    make install >/dev/null
-    popd >/dev/null
-    PY="$PYDIR/install/bin/python3"
-    export PATH="$PYDIR/install/bin:$PATH"
-fi
+
+
+echo "Bootstrapping Python" >&2
+PYVER="3.11.6"
+PYDIR="$BOOT_DIR/python"
+mkdir -p "$PYDIR"
+fetch "https://www.python.org/ftp/python/$PYVER/Python-$PYVER.tgz" "$BOOT_DIR/python.tgz"
+tar -xzf "$BOOT_DIR/python.tgz" -C "$PYDIR" --strip-components=1
+pushd "$PYDIR" >/dev/null
+echo "Configuring Python $PYVER" >&2
+./configure --prefix="$PYDIR/install" >/dev/null
+echo "Compiling Python" >&2
+make -j"$(nproc)" >/dev/null
+make install >/dev/null
+popd >/dev/null
+PY="$PYDIR/install/bin/python3"
+export PATH="$PYDIR/install/bin:$PATH"
+
 
 echo "Using Python at $PY" >&2
 
@@ -67,6 +62,7 @@ fi
 VENV_DIR="$BOOT_DIR/venv"
 echo "Creating virtual environment in $VENV_DIR" >&2
 "$PY" -m venv "$VENV_DIR"
+echo "Created ${VENV_DIR}"
 # Some python installations (e.g. those created with `pyvenv`) do not
 # include the usual activation scripts.  If they are missing, retry
 # using `virtualenv` which always provides them.
