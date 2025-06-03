@@ -13,4 +13,8 @@ rust_amireader/target/
 rust_amireader/Cargo.lock
 tests/NewData/
 ami2py/rust_bitparser.so
+ami2py/rust_bitparser.pyd
 ami2py/rust_amidatabase.so
+ami2py/rust_amidatabase.pyd
+ami2py/rust_amireader.so
+ami2py/rust_amireader.pyd

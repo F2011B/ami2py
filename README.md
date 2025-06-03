@@ -203,7 +203,10 @@ The included `run_tests.sh` script automatically compiles the Rust extension bef
 
 ```bash
 cargo build --manifest-path rust_bitparser/Cargo.toml --release --offline
+# Linux/macOS
 cp rust_bitparser/target/release/librust_bitparser.so ami2py/rust_bitparser.so
+# Windows
+cp rust_bitparser/target/release/rust_bitparser.dll ami2py/rust_bitparser.pyd
 ```
 
 This will make the Rust backend available when `AMI2PY_USE_RUST=1` is set.
