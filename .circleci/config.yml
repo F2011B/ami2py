@@ -8,7 +8,25 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pip install .
       - run: ./run_tests.sh
+
+  release:
+    docker:
+      - image: cimg/python:3.11
+    steps:
+      - checkout
+      - run: pip install -r requirements.txt
+      - run: pip install .
+      - run: ./scripts/build_whl.sh
+      - run: python scripts/github_release.py dist/*.whl
 workflows:
   build_and_test:
     jobs:
       - build
+  release_flow:
+    jobs:
+      - release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
