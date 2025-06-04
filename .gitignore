@@ -21,6 +21,8 @@ ami2py/rust_amireader.pyd
 
 # Ignore compiled CLI binaries
 ami_cli/bin/
+ami_cli/target/
+ami_cli/Cargo.lock
 rust_bitparser/target/
 rust_amireader/target/
 rust_amidatabase/target/
