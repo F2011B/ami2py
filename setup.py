@@ -15,7 +15,12 @@ BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 # Determine the path to the compiled CLI binary. This can be overridden via
 # the AMI_CLI_BIN environment variable during the build process.
 AMI_CLI_BIN = os.environ.get("AMI_CLI_BIN")
-if not AMI_CLI_BIN:
+if AMI_CLI_BIN:
+    # setuptools requires paths relative to this file and forward slashes
+    if os.path.isabs(AMI_CLI_BIN):
+        AMI_CLI_BIN = os.path.relpath(AMI_CLI_BIN, BASE_PATH)
+    AMI_CLI_BIN = AMI_CLI_BIN.replace(os.path.sep, "/")
+else:
     exe_name = "ami_cli.exe" if os.name == "nt" else "ami_cli"
     AMI_CLI_BIN = os.path.join("ami_cli", "target", "release", exe_name)
 
