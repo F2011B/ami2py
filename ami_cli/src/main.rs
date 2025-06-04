@@ -7,6 +7,8 @@ fn usage() {
     eprintln!("  create <db_path> <symbol1> [symbol2 ...]");
     eprintln!("  add-symbol <db_path> <symbol1> [symbol2 ...]");
     eprintln!("  list-symbols <db_path>");
+    eprintln!("\n<db_path> should point to the AmiBroker database folder containing broker.master.");
+    eprintln!("If the path contains spaces, wrap it in quotes.");
 }
 
 fn main() {
@@ -27,7 +29,11 @@ fn main() {
             db.write_database().ok();
         }
         "list-symbols" => {
-            if args.len() != 3 { usage(); return; }
+            if args.len() != 3 {
+                eprintln!("Error: 'list-symbols' expects a single <db_path> argument pointing to the database folder containing broker.master.");
+                usage();
+                return;
+            }
             let db = AmiDataBase::new(&args[2]).expect("open db");
             for s in db.get_symbols() { println!("{}", s); }
         }

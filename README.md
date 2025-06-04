@@ -156,8 +156,6 @@ ami_cli <command> [args]
   create <db_path> <symbol1> [symbol2 ...]
   add-symbol <db_path> <symbol1> [symbol2 ...]
   list-symbols <db_path>
-  list-quotes <db_path> <symbol> [start YYYY-MM-DD end YYYY-MM-DD]
-  add-quotes <db_path> <symbol> <csv_file>
 ```
 
 On Windows you can use the helper script `scripts\build_cli_windows.bat` to
