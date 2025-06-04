@@ -1,85 +1,59 @@
-#![allow(unsafe_op_in_unsafe_fn)]
-
-use pyo3::prelude::*;
-use pyo3::types::PyDict;
-use pyo3::types::PyByteArray;
-
-#[pyfunction]
-fn reverse_bits(byte_data: u8) -> u8 {
-    byte_data.reverse_bits()
+#[derive(Debug, Clone, Default)]
+pub struct Date {
+    pub year: u16,
+    pub month: u8,
+    pub day: u8,
+    pub hour: u8,
+    pub minute: u8,
+    pub second: u8,
+    pub milli_sec: u16,
+    pub micro_sec: u16,
+    pub reserved: u8,
+    pub is_future: u8,
 }
 
-#[pyfunction]
-fn read_date(date_tuple: Vec<u8>) -> PyResult<PyObject> {
-    if date_tuple.len() < 8 {
-        return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>("expected 8 bytes"));
-    }
-    let mut bytes = [0u8; 8];
-    bytes.copy_from_slice(&date_tuple[..8]);
-    let value = u64::from_le_bytes(bytes);
-    Python::with_gil(|py| {
-        let dict = PyDict::new_bound(py);
-        dict.set_item("Year", value >> 52)?;
-        dict.set_item("Month", (value >> 48) & 0x0Fu64)?;
-        dict.set_item("Day", (value >> 43) & 0x1Fu64)?;
-        dict.set_item("Hour", (value >> 38) & 0x1Fu64)?;
-        dict.set_item("Minute", (value >> 32) & 0x3Fu64)?;
-        dict.set_item("Second", (value >> 26) & 0x3Fu64)?;
-        dict.set_item("MilliSec", (value >> 16) & 0x3FFu64)?;
-        dict.set_item("MicroSec", (value >> 6) & 0x3FFu64)?;
-        dict.set_item("Reserved", value & 0xEu64)?;
-        dict.set_item("Isfut", value & 0x1u64)?;
-        Ok(dict.to_object(py))
+pub fn reverse_bits(byte: u8) -> u8 {
+    byte.reverse_bits()
+}
+
+pub fn read_date(bytes: &[u8]) -> Option<Date> {
+    if bytes.len() < 8 { return None; }
+    let mut arr = [0u8;8];
+    arr.copy_from_slice(&bytes[..8]);
+    let value = u64::from_le_bytes(arr);
+    Some(Date{
+        year: (value >> 52) as u16,
+        month: ((value >> 48) & 0x0F) as u8,
+        day: ((value >> 43) & 0x1F) as u8,
+        hour: ((value >> 38) & 0x1F) as u8,
+        minute: ((value >> 32) & 0x3F) as u8,
+        second: ((value >> 26) & 0x3F) as u8,
+        milli_sec: ((value >> 16) & 0x3FF) as u16,
+        micro_sec: ((value >> 6) & 0x3FF) as u16,
+        reserved: ((value & 0xE) >> 1) as u8,
+        is_future: (value & 0x1) as u8,
     })
 }
 
-#[pyfunction]
-fn create_float(float_tuple: Vec<u8>) -> PyResult<f32> {
-    if float_tuple.len() < 4 {
-        return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>("expected 4 bytes"));
-    }
-    let mut bytes = [0u8; 4];
-    bytes.copy_from_slice(&float_tuple[..4]);
-    Ok(f32::from_le_bytes(bytes))
+pub fn create_float(bytes: &[u8]) -> Option<f32> {
+    if bytes.len() < 4 { return None; }
+    let mut arr = [0u8;4];
+    arr.copy_from_slice(&bytes[..4]);
+    Some(f32::from_le_bytes(arr))
 }
 
-#[pyfunction]
-fn float_to_bin(py: Python<'_>, value: f32) -> PyResult<PyObject> {
-    let bytes = value.to_le_bytes();
-    Ok(PyByteArray::new_bound(py, &bytes).to_object(py))
+pub fn float_to_bin(value: f32) -> [u8;4] {
+    value.to_le_bytes()
 }
 
-#[pyfunction(signature = (day, month, year, hour=0u8, minute=0u8, second=0u8, mic_sec=0u16, milli_sec=0u16))]
-fn date_to_bin(
-    py: Python<'_>,
-    day: u8,
-    month: u8,
-    year: u16,
-    hour: u8,
-    minute: u8,
-    second: u8,
-    mic_sec: u16,
-    milli_sec: u16,
-) -> PyResult<PyObject> {
-    let values: u64 = ((year as u64) << 52)
+pub fn date_to_bin(day: u8, month: u8, year: u16, hour: u8, minute: u8, second: u8, micro_sec: u16, milli_sec: u16) -> [u8;8] {
+    let val: u64 = ((year as u64) << 52)
         | ((month as u64) << 48)
         | ((day as u64) << 43)
         | ((hour as u64) << 38)
         | ((minute as u64) << 32)
         | ((second as u64) << 26)
         | ((milli_sec as u64) << 16)
-        | ((mic_sec as u64) << 6);
-
-    let byte_values = values.to_le_bytes();
-    Ok(PyByteArray::new_bound(py, &byte_values).to_object(py))
-}
-
-#[pymodule]
-fn rust_bitparser(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(reverse_bits, m)?)?;
-    m.add_function(wrap_pyfunction!(read_date, m)?)?;
-    m.add_function(wrap_pyfunction!(create_float, m)?)?;
-    m.add_function(wrap_pyfunction!(float_to_bin, m)?)?;
-    m.add_function(wrap_pyfunction!(date_to_bin, m)?)?;
-    Ok(())
+        | ((micro_sec as u64) << 6);
+    val.to_le_bytes()
 }

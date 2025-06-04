@@ -13,7 +13,7 @@ else
 fi
 
 # rust_bitparser
-CARGO_FLAGS="--manifest-path rust_bitparser/Cargo.toml $COMMON_FLAGS"
+CARGO_FLAGS="--manifest-path rust_bitparser_py/Cargo.toml $COMMON_FLAGS"
 
 # Determine platform specific library names
 case "$(uname -s)" in
@@ -34,7 +34,7 @@ case "$(uname -s)" in
         ;;
 esac
 
-RUST_LIB="rust_bitparser/target/release/${LIB_PREFIX}rust_bitparser${LIB_SUFFIX}"
+RUST_LIB="rust_bitparser_py/target/release/${LIB_PREFIX}rust_bitparser${LIB_SUFFIX}"
 DEST_LIB="ami2py/rust_bitparser${DEST_EXT}"
 
 if [ ! -f "$RUST_LIB" ]; then
@@ -43,9 +43,9 @@ fi
 cp "$RUST_LIB" "$DEST_LIB"
 
 # rust_amidatabase if available
-if [ -f rust_amidatabase/Cargo.toml ]; then
-    CARGO_FLAGS="--manifest-path rust_amidatabase/Cargo.toml $COMMON_FLAGS"
-    RUST_LIB="rust_amidatabase/target/release/${LIB_PREFIX}rust_amidatabase${LIB_SUFFIX}"
+if [ -f rust_amidatabase_py/Cargo.toml ]; then
+    CARGO_FLAGS="--manifest-path rust_amidatabase_py/Cargo.toml $COMMON_FLAGS"
+    RUST_LIB="rust_amidatabase_py/target/release/${LIB_PREFIX}rust_amidatabase${LIB_SUFFIX}"
     DEST_LIB="ami2py/rust_amidatabase${DEST_EXT}"
     if [ ! -f "$RUST_LIB" ]; then
         cargo build $CARGO_FLAGS
@@ -54,9 +54,9 @@ if [ -f rust_amidatabase/Cargo.toml ]; then
 fi
 
 # rust_amireader if available
-if [ -f rust_amireader/Cargo.toml ]; then
-    CARGO_FLAGS="--manifest-path rust_amireader/Cargo.toml $COMMON_FLAGS"
-    RUST_LIB="rust_amireader/target/release/${LIB_PREFIX}rust_amireader${LIB_SUFFIX}"
+if [ -f rust_amireader_py/Cargo.toml ]; then
+    CARGO_FLAGS="--manifest-path rust_amireader_py/Cargo.toml $COMMON_FLAGS"
+    RUST_LIB="rust_amireader_py/target/release/${LIB_PREFIX}rust_amireader${LIB_SUFFIX}"
     DEST_LIB="ami2py/rust_amireader${DEST_EXT}"
     if [ ! -f "$RUST_LIB" ]; then
         cargo build $CARGO_FLAGS

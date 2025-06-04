@@ -5,7 +5,6 @@ edition = "2024"
 
 [lib]
 name = "rust_amireader"
-crate-type = ["cdylib"]
+path = "src/lib.rs"
 
 [dependencies]
-pyo3 = { version = "0.21", features = ["extension-module"] }
