@@ -3,14 +3,14 @@ __pycache__/
 pytest_cache/
 
 # Rust build artifacts
-rust_bitparser/target/
-rust_bitparser/Cargo.lock
-rust_bitparser/vendor/
-rust_amidatabase/target/
-rust_amidatabase/Cargo.lock
-rust_amidatabase/vendor/
-rust_amireader/target/
-rust_amireader/Cargo.lock
+rust_bitparser_py/target/
+rust_bitparser_py/Cargo.lock
+rust_bitparser_py/vendor/
+rust_amidatabase_py/target/
+rust_amidatabase_py/Cargo.lock
+rust_amidatabase_py/vendor/
+rust_amireader_py/target/
+rust_amireader_py/Cargo.lock
 tests/NewData/
 ami2py/rust_bitparser.so
 ami2py/rust_bitparser.pyd
@@ -21,3 +21,9 @@ ami2py/rust_amireader.pyd
 
 # Ignore compiled CLI binaries
 ami_cli/bin/
+rust_bitparser/target/
+rust_amireader/target/
+rust_amidatabase/target/
+rust_bitparser/Cargo.lock
+rust_amireader/Cargo.lock
+rust_amidatabase/Cargo.lock

@@ -1,108 +1,56 @@
-use pyo3::prelude::*;
-use pyo3::types::{PyModule, PyDict};
+use std::path::Path;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
+use rust_amireader::AmiReader;
 
-#[pyclass]
-pub struct AmiDataBase {
-    inner: Py<PyAny>,
+pub mod reader {
+    pub use rust_amireader::AmiReader;
 }
 
-#[pymethods]
+pub struct AmiDataBase {
+    pub folder: String,
+    reader: AmiReader,
+}
+
 impl AmiDataBase {
-    #[new]
-    #[pyo3(signature = (folder, use_compiled=false, avoid_windows_file=true))]
-    fn new(
-        py: Python,
-        folder: &PyAny,
-        use_compiled: bool,
-        avoid_windows_file: bool,
-    ) -> PyResult<Self> {
-        let folder_str: String = folder.str()?.to_string();
-        let ami_module = PyModule::import_bound(py, "ami2py.ami_database")?;
-        let class = ami_module.getattr("AmiDataBase")?;
-        let obj = class.call1((folder_str, use_compiled, avoid_windows_file))?;
-        Ok(AmiDataBase { inner: obj.into() })
+    pub fn new(folder: &str) -> std::io::Result<Self> {
+        let reader = AmiReader::new(folder)?;
+        Ok(AmiDataBase { folder: folder.to_string(), reader })
     }
 
-    fn get_symbols(&self, py: Python) -> PyResult<PyObject> {
-        self.inner.call_method0(py, "get_symbols")
+    pub fn get_symbols(&self) -> &[String] {
+        self.reader.get_symbols()
     }
 
-    fn add_symbol(&self, py: Python, symbol_name: &str) -> PyResult<()> {
-        self.inner.call_method1(py, "add_symbol", (symbol_name,))?;
-        Ok(())
-    }
-
-    fn add_new_symbol(&self, py: Python, symbol_name: &str, symboldata: Option<PyObject>) -> PyResult<()> {
-        match symboldata {
-            Some(data) => { self.inner.call_method1(py, "add_new_symbol", (symbol_name, data))?; },
-            None => { self.inner.call_method1(py, "add_new_symbol", (symbol_name,))?; }
+    pub fn add_symbol(&mut self, symbol: &str) -> std::io::Result<()> {
+        let folder = Path::new(&self.folder);
+        let symbol_file = folder.join(symbol_root_folder(symbol)).join(symbol);
+        if !symbol_file.exists() {
+            if let Some(parent) = symbol_file.parent() {
+                fs::create_dir_all(parent)?;
+            }
+            OpenOptions::new().create(true).write(true).open(&symbol_file)?;
+            self.reader.symbols.push(symbol.to_string());
         }
         Ok(())
     }
 
-    fn append_symbol_entry(&self, py: Python, symbol: &str, data: PyObject) -> PyResult<()> {
-        self.inner.call_method1(py, "append_symbol_entry", (symbol, data))?;
-        Ok(())
-    }
-
-    fn append_symbol_data(&self, py: Python, data: PyObject) -> PyResult<()> {
-        self.inner.call_method1(py, "append_symbol_data", (data,))?;
-        Ok(())
-    }
-
-    fn add_symbol_data_dict(&self, py: Python, data: PyObject) -> PyResult<()> {
-        self.inner.call_method1(py, "add_symbol_data_dict", (data,))?;
-        Ok(())
-    }
-
-    fn append_to_symbol(&self, py: Python, symbol: &str, data: PyObject) -> PyResult<()> {
-        self.inner.call_method1(py, "append_to_symbol", (symbol, data))?;
-        Ok(())
-    }
-
-    #[pyo3(name = "_get_dict_for_symbol", signature = (symbol_name, force_refresh=false))]
-    fn get_dict_for_symbol_inner(
-        &self,
-        py: Python,
-        symbol_name: &str,
-        force_refresh: bool,
-    ) -> PyResult<PyObject> {
-        self.inner.call_method1(py, "get_dict_for_symbol", (symbol_name, force_refresh))
-    }
-
-    #[pyo3(name = "_get_fast_symbol_data", signature = (symbol_name, force_refresh=false))]
-    fn get_fast_symbol_data_inner(
-        &self,
-        py: Python,
-        symbol_name: &str,
-        force_refresh: bool,
-    ) -> PyResult<PyObject> {
-        self.inner.call_method1(py, "get_fast_symbol_data", (symbol_name, force_refresh))
-    }
-
-    fn write_database(&self, py: Python) -> PyResult<()> {
-        self.inner.call_method0(py, "write_database")?;
+    pub fn write_database(&self) -> std::io::Result<()> {
+        // simplistic implementation: touch master file
+        let path = Path::new(&self.folder).join("broker.master");
+        if !path.exists() {
+            if let Some(parent) = path.parent() { fs::create_dir_all(parent)?; }
+            let mut f = OpenOptions::new().create(true).write(true).open(path)?;
+            f.write_all(b"AMI2PY")?; // placeholder
+        }
         Ok(())
     }
 }
 
-#[pymodule]
-fn rust_amidatabase(py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
-    m.add_class::<AmiDataBase>()?;
-
-    let cls = m.getattr("AmiDataBase")?;
-    let locals = PyDict::new(py);
-    locals.set_item("cls", cls.clone())?;
-    let code = r#"
-def add_wrappers(cls):
-    def get_dict_for_symbol(self, symbol_name, force_refresh=False):
-        return self._get_dict_for_symbol(symbol_name, force_refresh)
-    def get_fast_symbol_data(self, symbol_name, force_refresh=False):
-        return self._get_fast_symbol_data(symbol_name, force_refresh)
-    cls.get_dict_for_symbol = get_dict_for_symbol
-    cls.get_fast_symbol_data = get_fast_symbol_data
-"#;
-    py.run(code, None, Some(locals))?;
-    py.run("add_wrappers(cls)", None, Some(locals))?;
-    Ok(())
+fn symbol_root_folder(symbol: &str) -> String {
+    if symbol.starts_with('^') || symbol.starts_with('~') || symbol.starts_with('@') {
+        "_".to_string()
+    } else {
+        symbol.chars().next().unwrap_or(' ').to_ascii_lowercase().to_string()
+    }
 }
