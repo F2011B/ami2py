@@ -18,3 +18,6 @@ ami2py/rust_amidatabase.so
 ami2py/rust_amidatabase.pyd
 ami2py/rust_amireader.so
 ami2py/rust_amireader.pyd
+
+# Ignore compiled CLI binaries
+ami_cli/bin/

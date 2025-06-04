@@ -194,8 +194,15 @@ if [ ! -f "$CLI_BIN" ]; then
 fi
 echo "Built CLI binary at $CLI_BIN" >&2
 
+# Copy binary into package directory with a stable relative path
+BIN_DIR="$ROOT_DIR/ami_cli/bin"
+INSTALL_BIN="$BIN_DIR/ami_cli${BIN_EXT}"
+mkdir -p "$BIN_DIR"
+cp "$CLI_BIN" "$INSTALL_BIN"
+REL_CLI_BIN="ami_cli/bin/ami_cli${BIN_EXT}"
+
 # Build wheel
-export AMI_CLI_BIN="$CLI_BIN"
+export AMI_CLI_BIN="$REL_CLI_BIN"
 cd "$ROOT_DIR"
 echo "Building wheel" >&2
 python -m build --wheel
