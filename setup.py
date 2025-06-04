@@ -6,23 +6,25 @@ Setup script for ami2py
 
 import os
 import sys
+from pathlib import Path
 
 from setuptools import setup, find_packages
 
 
-BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+BASE_PATH = Path(__file__).resolve().parent
 
 # Determine the path to the compiled CLI binary. This can be overridden via
 # the AMI_CLI_BIN environment variable during the build process.
 AMI_CLI_BIN = os.environ.get("AMI_CLI_BIN")
 if AMI_CLI_BIN:
-    # setuptools requires paths relative to this file and forward slashes
-    if os.path.isabs(AMI_CLI_BIN):
-        AMI_CLI_BIN = os.path.relpath(AMI_CLI_BIN, BASE_PATH)
-    AMI_CLI_BIN = AMI_CLI_BIN.replace(os.path.sep, "/")
+    p = Path(AMI_CLI_BIN)
 else:
     exe_name = "ami_cli.exe" if os.name == "nt" else "ami_cli"
-    AMI_CLI_BIN = os.path.join("ami_cli", "target", "release", exe_name)
+    p = Path("ami_cli") / "bin" / exe_name
+
+if p.is_absolute():
+    p = p.relative_to(BASE_PATH)
+AMI_CLI_BIN = p.as_posix()
 
 
 if sys.version_info < (3, 6):
@@ -40,7 +42,10 @@ setup(
     packages=find_packages("."),
     package_dir={"": "."},
     include_package_data=True,
-    package_data={"ami2py": ["py.typed"]},
+    package_data={
+        "ami2py": ["py.typed"],
+        "ami_cli": ["bin/ami_cli*"]
+    },
     python_requires=">= 3.6",
     license="MIT",
     # install_requires=["setuptools", "pip", "docutils", "purepng>=0.1.1"],
