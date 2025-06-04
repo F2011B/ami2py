@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyModule};
-use rust_amidatabase as base;
+use ::rust_amidatabase as base;
 
 #[pyclass]
 pub struct AmiDataBase {
@@ -30,7 +30,7 @@ impl AmiDataBase {
         self.py_api.call_method0(py, "get_symbols")
     }
 
-    fn add_symbol(&self, py: Python, symbol_name: &str) -> PyResult<()> {
+    fn add_symbol(&mut self, py: Python, symbol_name: &str) -> PyResult<()> {
         self.inner.add_symbol(symbol_name).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))?;
         self.py_api.call_method1(py, "add_symbol", (symbol_name,))?;
         Ok(())

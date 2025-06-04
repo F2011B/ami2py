@@ -10,7 +10,11 @@ pub struct AmiReader {
 impl AmiReader {
     pub fn new(folder: &str) -> std::io::Result<Self> {
         let path = Path::new(folder).join("broker.master");
-        let data = fs::read(&path)?;
+        let data = match fs::read(&path) {
+            Ok(d) => d,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Vec::new(),
+            Err(e) => return Err(e),
+        };
         let (_, symbols) = parse_master(&data);
         Ok(AmiReader { folder: folder.to_string(), symbols })
     }
