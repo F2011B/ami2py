@@ -160,6 +160,10 @@ ami_cli <command> [args]
   add-quotes <db_path> <symbol> <csv_file>
 ```
 
+On Windows you can use the helper script `scripts\build_cli_windows.bat` to
+compile `ami_cli.exe` in release mode. The resulting executable can be found
+under `ami_cli\target\release\ami_cli.exe`.
+
 Todos
 --------------------
 * Write tests for intraday data, currently data structures is able to handle intraday data. 
