@@ -14,6 +14,9 @@ pub struct AmiDataBase {
 
 impl AmiDataBase {
     pub fn new(folder: &str) -> std::io::Result<Self> {
+        if !Path::new(folder).exists() {
+            fs::create_dir_all(folder)?;
+        }
         let reader = AmiReader::new(folder)?;
         Ok(AmiDataBase { folder: folder.to_string(), reader })
     }
@@ -29,7 +32,7 @@ impl AmiDataBase {
             if let Some(parent) = symbol_file.parent() {
                 fs::create_dir_all(parent)?;
             }
-            OpenOptions::new().create(true).write(true).open(&symbol_file)?;
+            // do not create an empty file here; file will be created when data is written
             self.reader.symbols.push(symbol.to_string());
         }
         Ok(())

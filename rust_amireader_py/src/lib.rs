@@ -2,7 +2,7 @@ use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList};
 use std::fs;
 use std::path::Path;
-use rust_amireader as base;
+use ::rust_amireader as base;
 
 const MASTER_ENTRY_SIZE: usize = 1172;
 const SYMBOL_HEADER_SIZE: usize = 0x4A0; // 1184
@@ -18,7 +18,7 @@ pub struct AmiReader {
 impl AmiReader {
     #[new]
     #[pyo3(signature = (folder, use_compiled=false))]
-    fn new(py: Python<'_>, folder: &str, _use_compiled: bool) -> PyResult<Self> {
+    fn new(py: Python<'_>, folder: &str, use_compiled: bool) -> PyResult<Self> {
         let inner = base::AmiReader::new(folder).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))?;
         let path = Path::new(folder).join("broker.master");
         let data = fs::read(&path).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))?;
