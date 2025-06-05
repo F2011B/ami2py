@@ -171,12 +171,13 @@ echo "Vendoring Rust dependencies" >&2
 COMMON_FLAGS="--release --offline"
 
 # Build Rust libraries and copy them into the package
-for CRATE in rust_bitparser rust_amidatabase rust_amireader; do
+for CRATE in rust_bitparser_py rust_amidatabase_py rust_amireader_py; do
     if [ -f "$ROOT_DIR/rust/$CRATE/Cargo.toml" ]; then
+        LIB_NAME=${CRATE%_py}
         echo "Building $CRATE" >&2
         cargo build --manifest-path "$ROOT_DIR/rust/$CRATE/Cargo.toml" $COMMON_FLAGS
-        SRC_LIB="$ROOT_DIR/rust/$CRATE/target/release/${LIB_PREFIX}${CRATE}${LIB_SUFFIX}"
-        DEST_LIB="$ROOT_DIR/ami2py/${CRATE}${DEST_EXT}"
+        SRC_LIB="$ROOT_DIR/rust/$CRATE/target/release/${LIB_PREFIX}${LIB_NAME}${LIB_SUFFIX}"
+        DEST_LIB="$ROOT_DIR/ami2py/${LIB_NAME}${DEST_EXT}"
         echo "Copying $SRC_LIB to $DEST_LIB" >&2
         if [ -f "$SRC_LIB" ]; then
             cp "$SRC_LIB" "$DEST_LIB"
