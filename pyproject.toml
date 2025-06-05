@@ -20,4 +20,4 @@ classifiers = [
 ]
 
 [tool.setuptools.package-data]
-"rust/ami_cli" = ["bin/ami_cli*"]
+"*" = ["bin/ami_cli*"]
