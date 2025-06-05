@@ -8,5 +8,5 @@ members = [
     "rust/rust_amireader_py",
     "rust/rust_bitparser",
     "rust/rust_bitparser_py",
-    "mcp_server"
+    "rust/mcp_server"
 ]
