@@ -4,7 +4,7 @@ edition = "2021"
 version = "0.1.0"
 
 [dependencies]
-mcpr = { version = "0.2", default-features = false, features = ["server", "transport_stdio"] }
+mcpr = { version = "0.3", default-features = false, features = ["server", "transport_stdio"] }
 serde_json = "1"
 anyhow = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
