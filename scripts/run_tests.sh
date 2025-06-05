@@ -35,7 +35,7 @@ case "$(uname -s)" in
 esac
 
 # rust_bitparser
-RUST_LIB="rust/rust_bitparser_py/target/release/${LIB_PREFIX}rust_bitparser_py${LIB_SUFFIX}"
+RUST_LIB="rust/rust_bitparser_py/target/release/${LIB_PREFIX}rust_bitparser${LIB_SUFFIX}"
 DEST_LIB="ami2py/rust_bitparser${DEST_EXT}"
 
 if [ ! -f "$RUST_LIB" ]; then
@@ -47,7 +47,7 @@ cp "$RUST_LIB" "$DEST_LIB"
 if [ -f rust/rust_amidatabase_py/Cargo.toml ]; then
     CARGO_FLAGS="--manifest-path rust/rust_amidatabase_py/Cargo.toml $COMMON_FLAGS"
     # rust_amidatabase if available
-    RUST_LIB="rust/rust_amidatabase_py/target/release/${LIB_PREFIX}rust_amidatabase_py${LIB_SUFFIX}"
+    RUST_LIB="rust/rust_amidatabase_py/target/release/${LIB_PREFIX}rust_amidatabase${LIB_SUFFIX}"
     DEST_LIB="ami2py/rust_amidatabase${DEST_EXT}"
     if [ ! -f "$RUST_LIB" ]; then
         cargo build $CARGO_FLAGS
@@ -59,7 +59,7 @@ fi
 if [ -f rust/rust_amireader_py/Cargo.toml ]; then
     CARGO_FLAGS="--manifest-path rust/rust_amireader_py/Cargo.toml $COMMON_FLAGS"
     # rust_amireader if available
-    RUST_LIB="rust/rust_amireader_py/target/release/${LIB_PREFIX}rust_amireader_py${LIB_SUFFIX}"
+    RUST_LIB="rust/rust_amireader_py/target/release/${LIB_PREFIX}rust_amireader${LIB_SUFFIX}"
     DEST_LIB="ami2py/rust_amireader${DEST_EXT}"
     if [ ! -f "$RUST_LIB" ]; then
         cargo build $CARGO_FLAGS
