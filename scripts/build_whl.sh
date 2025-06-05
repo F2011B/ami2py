@@ -165,6 +165,9 @@ case "$(uname -s)" in
         ;;
 esac
 
+echo "Vendoring Rust dependencies" >&2
+"$ROOT_DIR/scripts/setup_cargo.sh"
+
 COMMON_FLAGS="--release --offline"
 
 # Build Rust libraries and copy them into the package
