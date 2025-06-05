@@ -169,6 +169,7 @@ echo "Vendoring Rust dependencies" >&2
 "$ROOT_DIR/scripts/setup_cargo.sh"
 
 COMMON_FLAGS="--release --offline"
+TARGET_DIR="$ROOT_DIR/target"
 
 # Build Rust libraries and copy them into the package
 for CRATE in rust_bitparser_py rust_amidatabase_py rust_amireader_py; do
@@ -176,7 +177,7 @@ for CRATE in rust_bitparser_py rust_amidatabase_py rust_amireader_py; do
         LIB_NAME=${CRATE%_py}
         echo "Building $CRATE" >&2
         cargo build --manifest-path "$ROOT_DIR/rust/$CRATE/Cargo.toml" $COMMON_FLAGS
-        SRC_LIB="$ROOT_DIR/rust/$CRATE/target/release/${LIB_PREFIX}${LIB_NAME}${LIB_SUFFIX}"
+        SRC_LIB="$TARGET_DIR/release/${LIB_PREFIX}${LIB_NAME}${LIB_SUFFIX}"
         DEST_LIB="$ROOT_DIR/ami2py/${LIB_NAME}${DEST_EXT}"
         echo "Copying $SRC_LIB to $DEST_LIB" >&2
         if [ -f "$SRC_LIB" ]; then
@@ -191,7 +192,7 @@ done
 # Build CLI binary
 echo "Building ami_cli" >&2
 cargo build --manifest-path "$ROOT_DIR/rust/ami_cli/Cargo.toml" $COMMON_FLAGS
-CLI_BIN="$ROOT_DIR/rust/ami_cli/target/release/ami_cli${BIN_EXT}"
+CLI_BIN="$TARGET_DIR/release/ami_cli${BIN_EXT}"
 if [ ! -f "$CLI_BIN" ]; then
     echo "CLI binary not found: $CLI_BIN" >&2
     exit 1
