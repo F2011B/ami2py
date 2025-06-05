@@ -2,6 +2,9 @@ __pycache__/
 *.egg-info/
 pytest_cache/
 
+# Ignore workspace lock file generated during CI
+Cargo.lock
+
 # Rust build artifacts
 rust/rust_bitparser_py/target/
 rust/rust_bitparser_py/Cargo.lock
@@ -31,3 +34,4 @@ rust/rust_amireader/Cargo.lock
 rust/rust_amidatabase/Cargo.lock
 rust/mcp_server/target/
 rust/mcp_server/Cargo.lock
+target/

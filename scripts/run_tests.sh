@@ -67,4 +67,14 @@ if [ -f rust/rust_amireader_py/Cargo.toml ]; then
     cp "$RUST_LIB" "$DEST_LIB"
 fi
 
+# Build mcp_server if available
+if [ -f rust/mcp_server/Cargo.toml ]; then
+    cargo build --manifest-path rust/mcp_server/Cargo.toml $COMMON_FLAGS || true
+fi
+
+# Build ami_cli if available
+if [ -f rust/ami_cli/Cargo.toml ]; then
+    cargo build --manifest-path rust/ami_cli/Cargo.toml $COMMON_FLAGS || true
+fi
+
 python -m pytest "$@"
