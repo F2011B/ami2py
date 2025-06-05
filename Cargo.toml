@@ -1,0 +1,12 @@
+[workspace]
+resolver = "3"
+members = [
+    "rust/ami_cli",
+    "rust/rust_amidatabase",
+    "rust/rust_amidatabase_py",
+    "rust/rust_amireader",
+    "rust/rust_amireader_py",
+    "rust/rust_bitparser",
+    "rust/rust_bitparser_py",
+    "mcp_server"
+]
