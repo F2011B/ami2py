@@ -16,4 +16,4 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - run: pip install .
-      - run: ./run_tests.sh
+      - run: ./scripts/run_tests.sh

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Repository-Root ermitteln
-root_dir="$(cd "$(dirname "$0")" && pwd)"
+root_dir="$(cd "$(dirname "$0")/.." && pwd)"
 proj_dir="$root_dir/rust/rust_bitparser_py"
 
 cd "$proj_dir"
