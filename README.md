@@ -166,6 +166,5 @@ Key Points
    symbols are stored (e.g. `a/AAPL`).
 
 ## FAQs
-
 This section collects frequently asked questions about ami2py.
 
