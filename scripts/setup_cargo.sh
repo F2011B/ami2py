@@ -18,5 +18,5 @@ cargo generate-lockfile
 mkdir -p .cargo
 cargo vendor --locked vendor > .cargo/config.toml
 
-echo "✔ Alle Crates wurden nach rust/rust_bitparser/vendor gespiegelt."
+echo "✔ Alle Crates wurden nach rust/rust_bitparser_py/vendor gespiegelt."
 echo "  Offline-Build:  cargo build --offline"
