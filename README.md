@@ -1,6 +1,6 @@
  ami2py
 ==========================
-![ami2py logo](logo.png)
+<img src="logo.png" alt="ami2py logo" width="50%" height="50%" />
 
 
 [![CI](https://github.com/F2011B/ami2py/actions/workflows/tests.yml/badge.svg)](https://github.com/F2011B/ami2py/actions/workflows/tests.yml)
