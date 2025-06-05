@@ -20,7 +20,7 @@ if AMI_CLI_BIN:
     p = Path(AMI_CLI_BIN)
 else:
     exe_name = "ami_cli.exe" if os.name == "nt" else "ami_cli"
-    p = Path("ami_cli") / "bin" / exe_name
+    p = Path("rust") / "ami_cli" / "bin" / exe_name
 
 if p.is_absolute():
     p = p.relative_to(BASE_PATH)
@@ -44,7 +44,7 @@ setup(
     include_package_data=True,
     package_data={
         "ami2py": ["py.typed"],
-        "ami_cli": ["bin/ami_cli*"]
+        "rust/ami_cli": ["bin/ami_cli*"]
     },
     python_requires=">= 3.6",
     license="MIT",

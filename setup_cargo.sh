@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Repository-Root ermitteln
 root_dir="$(cd "$(dirname "$0")" && pwd)"
-proj_dir="$root_dir/rust_bitparser_py"
+proj_dir="$root_dir/rust/rust_bitparser_py"
 
 cd "$proj_dir"
 
@@ -18,5 +18,5 @@ cargo generate-lockfile
 mkdir -p .cargo
 cargo vendor --locked vendor > .cargo/config.toml
 
-echo "✔ Alle Crates wurden nach rust_bitparser/vendor gespiegelt."
+echo "✔ Alle Crates wurden nach rust/rust_bitparser/vendor gespiegelt."
 echo "  Offline-Build:  cargo build --offline"

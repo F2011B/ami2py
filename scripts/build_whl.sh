@@ -169,10 +169,10 @@ COMMON_FLAGS="--release --offline"
 
 # Build Rust libraries and copy them into the package
 for CRATE in rust_bitparser rust_amidatabase rust_amireader; do
-    if [ -f "$ROOT_DIR/$CRATE/Cargo.toml" ]; then
+    if [ -f "$ROOT_DIR/rust/$CRATE/Cargo.toml" ]; then
         echo "Building $CRATE" >&2
-        cargo build --manifest-path "$ROOT_DIR/$CRATE/Cargo.toml" $COMMON_FLAGS
-        SRC_LIB="$ROOT_DIR/$CRATE/target/release/${LIB_PREFIX}${CRATE}${LIB_SUFFIX}"
+        cargo build --manifest-path "$ROOT_DIR/rust/$CRATE/Cargo.toml" $COMMON_FLAGS
+        SRC_LIB="$ROOT_DIR/rust/$CRATE/target/release/${LIB_PREFIX}${CRATE}${LIB_SUFFIX}"
         DEST_LIB="$ROOT_DIR/ami2py/${CRATE}${DEST_EXT}"
         echo "Copying $SRC_LIB to $DEST_LIB" >&2
         if [ -f "$SRC_LIB" ]; then
@@ -186,8 +186,8 @@ done
 
 # Build CLI binary
 echo "Building ami_cli" >&2
-cargo build --manifest-path "$ROOT_DIR/ami_cli/Cargo.toml" $COMMON_FLAGS
-CLI_BIN="$ROOT_DIR/ami_cli/target/release/ami_cli${BIN_EXT}"
+cargo build --manifest-path "$ROOT_DIR/rust/ami_cli/Cargo.toml" $COMMON_FLAGS
+CLI_BIN="$ROOT_DIR/rust/ami_cli/target/release/ami_cli${BIN_EXT}"
 if [ ! -f "$CLI_BIN" ]; then
     echo "CLI binary not found: $CLI_BIN" >&2
     exit 1
@@ -195,11 +195,11 @@ fi
 echo "Built CLI binary at $CLI_BIN" >&2
 
 # Copy binary into package directory with a stable relative path
-BIN_DIR="$ROOT_DIR/ami_cli/bin"
+BIN_DIR="$ROOT_DIR/rust/ami_cli/bin"
 INSTALL_BIN="$BIN_DIR/ami_cli${BIN_EXT}"
 mkdir -p "$BIN_DIR"
 cp "$CLI_BIN" "$INSTALL_BIN"
-REL_CLI_BIN="ami_cli/bin/ami_cli${BIN_EXT}"
+REL_CLI_BIN="rust/ami_cli/bin/ami_cli${BIN_EXT}"
 
 # Build wheel
 export AMI_CLI_BIN="$REL_CLI_BIN"
