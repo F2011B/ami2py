@@ -29,3 +29,5 @@ rust/rust_amidatabase/target/
 rust/rust_bitparser/Cargo.lock
 rust/rust_amireader/Cargo.lock
 rust/rust_amidatabase/Cargo.lock
+mcp_server/target/
+mcp_server/Cargo.lock
