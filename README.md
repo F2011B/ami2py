@@ -149,9 +149,9 @@ python scripts/update_yahoo_db.py /path/to/db
 Command Line Interface
 ----------------------
 
-The `ami_cli` directory contains a small command line tool written in Rust
+The `rust/ami_cli` directory contains a small command line tool written in Rust
 that wraps the Python API via PyO3. Build it using
-`cargo build --manifest-path ami_cli/Cargo.toml --release` and use it like:
+`cargo build --manifest-path rust/ami_cli/Cargo.toml --release` and use it like:
 
 ```bash
 ami_cli <command> [args]
@@ -164,7 +164,7 @@ ami_cli <command> [args]
 
 On Windows you can use the helper script `scripts\build_cli_windows.bat` to
 compile `ami_cli.exe` in release mode. The resulting executable can be found
-under `ami_cli\target\release\ami_cli.exe`.
+under `rust\ami_cli\target\release\ami_cli.exe`.
 
 Todos
 --------------------
@@ -223,11 +223,11 @@ library falls back to the pure Python implementation.
 The included `run_tests.sh` script automatically compiles the Rust extension before running the tests. It uses an offline build by default but switches to an online build when the `CIRCLECI` environment variable is present. In this case the script also sets `CARGO_NET_OFFLINE=false` to override any offline Cargo configuration. If you want to build it manually, execute:
 
 ```bash
-cargo build --manifest-path rust_bitparser/Cargo.toml --release --offline
+cargo build --manifest-path rust/rust_bitparser/Cargo.toml --release --offline
 # Linux/macOS
-cp rust_bitparser/target/release/librust_bitparser.so ami2py/rust_bitparser.so
+cp rust/rust_bitparser/target/release/librust_bitparser.so ami2py/rust_bitparser.so
 # Windows
-cp rust_bitparser/target/release/rust_bitparser.dll ami2py/rust_bitparser.pyd
+cp rust/rust_bitparser/target/release/rust_bitparser.dll ami2py/rust_bitparser.pyd
 ```
 
 This will make the Rust backend available when `AMI2PY_USE_RUST=1` is set.
