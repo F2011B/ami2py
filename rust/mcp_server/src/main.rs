@@ -5,7 +5,7 @@ use mcpr::{
     transport::stdio::StdioTransport,
     Tool,
 };
-use rust_amidatabase::AmiDataBase;
+use rust_ami::amidatabase::AmiDataBase;
 use serde::Serialize;
 use serde_json::Value;
 use std::sync::Arc;
