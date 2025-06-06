@@ -12,8 +12,8 @@ else
     COMMON_FLAGS="--release --offline"
 fi
 
-# rust_bitparser
-CARGO_FLAGS="--manifest-path rust/rust_bitparser_py/Cargo.toml $COMMON_FLAGS --target-dir rust/rust_bitparser_py/target"
+# rust python wrappers (single crate)
+CARGO_FLAGS="--manifest-path rust/rust_ami_py/Cargo.toml $COMMON_FLAGS --target-dir rust/rust_ami_py/target"
 
 # Determine platform specific library names
 case "$(uname -s)" in
@@ -34,38 +34,17 @@ case "$(uname -s)" in
         ;;
 esac
 
-# rust_bitparser
-RUST_LIB="rust/rust_bitparser_py/target/release/${LIB_PREFIX}rust_bitparser${LIB_SUFFIX}"
-DEST_LIB="ami2py/rust_bitparser${DEST_EXT}"
-
-if [ ! -f "$RUST_LIB" ]; then
+# build wrappers if library not already built
+RUST_LIB_DIR="rust/rust_ami_py/target/release"
+if [ ! -f "$RUST_LIB_DIR/${LIB_PREFIX}rust_ami_py${LIB_SUFFIX}" ]; then
     cargo build $CARGO_FLAGS
 fi
-cp "$RUST_LIB" "$DEST_LIB"
 
-# rust_amidatabase if available
-if [ -f rust/rust_amidatabase_py/Cargo.toml ]; then
-    CARGO_FLAGS="--manifest-path rust/rust_amidatabase_py/Cargo.toml $COMMON_FLAGS --target-dir rust/rust_amidatabase_py/target"
-    # rust_amidatabase if available
-    RUST_LIB="rust/rust_amidatabase_py/target/release/${LIB_PREFIX}rust_amidatabase${LIB_SUFFIX}"
-    DEST_LIB="ami2py/rust_amidatabase${DEST_EXT}"
-    if [ ! -f "$RUST_LIB" ]; then
-        cargo build $CARGO_FLAGS
-    fi
+for mod in rust_bitparser rust_amidatabase rust_amireader; do
+    RUST_LIB="$RUST_LIB_DIR/${LIB_PREFIX}rust_ami_py${LIB_SUFFIX}"
+    DEST_LIB="ami2py/${mod}${DEST_EXT}"
     cp "$RUST_LIB" "$DEST_LIB"
-fi
-
-# rust_amireader if available
-if [ -f rust/rust_amireader_py/Cargo.toml ]; then
-    CARGO_FLAGS="--manifest-path rust/rust_amireader_py/Cargo.toml $COMMON_FLAGS --target-dir rust/rust_amireader_py/target"
-    # rust_amireader if available
-    RUST_LIB="rust/rust_amireader_py/target/release/${LIB_PREFIX}rust_amireader${LIB_SUFFIX}"
-    DEST_LIB="ami2py/rust_amireader${DEST_EXT}"
-    if [ ! -f "$RUST_LIB" ]; then
-        cargo build $CARGO_FLAGS
-    fi
-    cp "$RUST_LIB" "$DEST_LIB"
-fi
+done
 
 # Build mcp_server if available
 if [ -f rust/mcp_server/Cargo.toml ]; then

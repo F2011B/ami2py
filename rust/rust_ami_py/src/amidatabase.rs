@@ -91,8 +91,7 @@ impl AmiDataBase {
     }
 }
 
-#[pymodule]
-fn rust_amidatabase(py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
+pub fn rust_amidatabase(py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<AmiDataBase>()?;
 
     let cls = m.getattr("AmiDataBase")?;
