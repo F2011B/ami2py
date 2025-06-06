@@ -46,11 +46,6 @@ for mod in rust_bitparser rust_amidatabase rust_amireader; do
     cp "$RUST_LIB" "$DEST_LIB"
 done
 
-# Build mcp_server if available
-if [ -f rust/mcp_server/Cargo.toml ]; then
-    cargo build --manifest-path rust/mcp_server/Cargo.toml $COMMON_FLAGS || true
-fi
-
 # Build ami_cli if available
 if [ -f rust/ami_cli/Cargo.toml ]; then
     cargo build --manifest-path rust/ami_cli/Cargo.toml $COMMON_FLAGS || true

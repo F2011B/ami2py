@@ -21,6 +21,4 @@ ami2py/rust_amireader.pyd
 rust/ami_cli/bin/
 rust/ami_cli/target/
 rust/ami_cli/Cargo.lock
-rust/mcp_server/target/
-rust/mcp_server/Cargo.lock
 target/

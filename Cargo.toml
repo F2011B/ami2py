@@ -2,7 +2,6 @@
 resolver = "3"
 members = [
     "rust/ami_cli",
-    "rust/mcp_server",
     "rust/ami2rs",
     "rust/rust_ami_py"
 ]
