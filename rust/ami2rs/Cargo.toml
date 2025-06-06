@@ -1,8 +1,8 @@
 [package]
-name = "rust_ami"
+name = "ami2rs"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "rust_ami"
+name = "ami2rs"
 path = "src/lib.rs"
