@@ -1,10 +1,8 @@
 [package]
-name = "rust_amireader"
+name = "rust_ami"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "rust_amireader"
+name = "rust_ami"
 path = "src/lib.rs"
-
-[dependencies]

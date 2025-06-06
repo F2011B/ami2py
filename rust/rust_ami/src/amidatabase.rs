@@ -1,10 +1,10 @@
 use std::path::Path;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
-use rust_amireader::{AmiReader, Quote};
+use crate::amireader::{AmiReader, Quote};
 
 pub mod reader {
-    pub use rust_amireader::AmiReader;
+    pub use crate::amireader::AmiReader;
 }
 
 pub struct AmiDataBase {

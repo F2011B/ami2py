@@ -9,4 +9,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.21", features = ["extension-module"] }
-rust_amidatabase = { path = "../rust_amidatabase" }
+rust_ami = { path = "../rust_ami" }
