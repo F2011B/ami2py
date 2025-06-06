@@ -2,7 +2,7 @@
 
 use pyo3::prelude::*;
 use pyo3::types::{PyByteArray, PyDict};
-use rust_ami::bitparser as base;
+use ami2rs::bitparser as base;
 
 #[pyfunction]
 fn reverse_bits(byte_data: u8) -> u8 {

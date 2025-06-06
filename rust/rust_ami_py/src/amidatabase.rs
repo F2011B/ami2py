@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyModule};
-use rust_ami::amidatabase as base;
+use ami2rs::amidatabase as base;
 
 #[pyclass]
 pub struct AmiDataBase {

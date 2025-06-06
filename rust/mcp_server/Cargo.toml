@@ -9,4 +9,4 @@ serde_json = "1"
 anyhow = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 serde = { version = "1", features = ["derive"] }
-rust_ami = { path = "../rust_ami" }
+ami2rs = { path = "../ami2rs" }

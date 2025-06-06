@@ -1,4 +1,4 @@
-use rust_ami::amidatabase::AmiDataBase;
+use ami2rs::amidatabase::AmiDataBase;
 use std::env;
 
 fn usage() {

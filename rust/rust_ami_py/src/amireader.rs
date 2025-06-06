@@ -2,7 +2,7 @@ use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList};
 use std::fs;
 use std::path::Path;
-use rust_ami::amireader as base;
+use ami2rs::amireader as base;
 
 const MASTER_ENTRY_SIZE: usize = 1172;
 const SYMBOL_HEADER_SIZE: usize = 0x4A0; // 1184
