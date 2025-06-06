@@ -1,3 +1,6 @@
+[net]
+offline = true
+
 [source.crates-io]
 replace-with = "vendored-sources"
 

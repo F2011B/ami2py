@@ -6,14 +6,9 @@ pytest_cache/
 Cargo.lock
 
 # Rust build artifacts
-rust/rust_bitparser_py/target/
-rust/rust_bitparser_py/Cargo.lock
-rust/rust_bitparser_py/vendor/
-rust/rust_amidatabase_py/target/
-rust/rust_amidatabase_py/Cargo.lock
-rust/rust_amidatabase_py/vendor/
-rust/rust_amireader_py/target/
-rust/rust_amireader_py/Cargo.lock
+rust/rust_ami_py/target/
+rust/rust_ami_py/Cargo.lock
+rust/rust_ami_py/vendor/
 tests/NewData/
 ami2py/rust_bitparser.so
 ami2py/rust_bitparser.pyd
@@ -26,12 +21,6 @@ ami2py/rust_amireader.pyd
 rust/ami_cli/bin/
 rust/ami_cli/target/
 rust/ami_cli/Cargo.lock
-rust/rust_bitparser/target/
-rust/rust_amireader/target/
-rust/rust_amidatabase/target/
-rust/rust_bitparser/Cargo.lock
-rust/rust_amireader/Cargo.lock
-rust/rust_amidatabase/Cargo.lock
 rust/mcp_server/target/
 rust/mcp_server/Cargo.lock
 target/

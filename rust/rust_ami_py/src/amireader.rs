@@ -55,8 +55,7 @@ impl AmiReader {
     }
 }
 
-#[pymodule]
-fn rust_amireader(_py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
+pub fn rust_amireader(_py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<AmiReader>()?;
     Ok(())
 }

@@ -61,8 +61,7 @@ fn date_to_bin(
     Ok(PyByteArray::new_bound(py, &bytes).to_object(py))
 }
 
-#[pymodule]
-fn rust_bitparser(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn rust_bitparser(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(reverse_bits, m)?)?;
     m.add_function(wrap_pyfunction!(read_date, m)?)?;
     m.add_function(wrap_pyfunction!(create_float, m)?)?;

@@ -1,10 +1,10 @@
 [package]
-name = "rust_bitparser_py"
+name = "rust_ami_py"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "rust_bitparser"
+name = "rust_ami_py"
 crate-type = ["cdylib"]
 
 [dependencies]
