@@ -3,7 +3,7 @@ set -e
 
 
 # Build the Rust extensions
-if [ -n "${CIRCLECI:-}" ] || [ -n "${GITHUB_ACTIONS:-}" ]; then
+if [ -n "${CIRCLECI:-}" ] || [ -n "${GITHUB_ACTIONS:-}" ] || [ -n "${ALLOW_ONLINE_BUILD:-}" ]; then
     # CI environments have network access, disable any offline config
     export CARGO_NET_OFFLINE=false
     COMMON_FLAGS="--release"
@@ -11,6 +11,9 @@ else
     # Default to offline mode for local environments to support Codex
     COMMON_FLAGS="--release --offline"
 fi
+
+# Fix for Python 3.13+ with PyO3 0.21
+export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 
 # rust python wrappers (single crate)
 CARGO_FLAGS="--manifest-path rust/rust_ami_py/Cargo.toml $COMMON_FLAGS --target-dir rust/rust_ami_py/target"

@@ -6,3 +6,4 @@ sphinx_rtd_theme
 construct
 pandas
 
+dataclass-type-validator
